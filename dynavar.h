@@ -27,6 +27,11 @@ typedef struct
     void *nxt;
 } Var;
 
+
+Var new_int_var(int x);
+Var new_string_var(char *x);
+Var new_bool_var(bool x);
+
 #endif
 
 /*
