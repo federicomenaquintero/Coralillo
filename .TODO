@@ -15,5 +15,7 @@ DYNAVAR:
     ☐ Handle errors.
 
 TESTS:
-    ☐ Find test suite for c.
+    ☐ Find test suite for c. @done
+    // I copied some of the Unity repository
+    // More info at www.throwtheswitch.org
     ☐ Use it.
