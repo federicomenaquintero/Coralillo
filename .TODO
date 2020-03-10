@@ -7,3 +7,9 @@ PARSER:
 DYNAVAR:
     ☐ Make dynamic lists. @started(20-03-09 18:09)
     ☐ Manage to typedef a generic type [to avoid writing tree equal functions] @high @started(20-03-09 18:09)
+    ☐ Add macro to automatically call new_TYPE_var based on the type.
+    ☐ Handle errors.
+
+TESTS:
+    ☐ Find test suite for c.
+    ☐ Use it.
