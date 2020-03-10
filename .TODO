@@ -4,4 +4,6 @@ SYNTAX:
 PARSER:
     ☐ Figure out how to parse...
 
-
+DYNAVAR:
+    ☐ Make dynamic lists. @started(20-03-09 18:09)
+    ☐ Manage to typedef a generic type [to avoid writing tree equal functions] @high @started(20-03-09 18:09)
