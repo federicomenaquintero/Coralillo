@@ -27,10 +27,13 @@ typedef struct
     void *asoc;
 } Var;
 
-
 Var new_int_var(int x);
 Var new_string_var(char *x);
 Var new_bool_var(bool x);
+
+Var *add_int_asoc(int x);
+Var *add_string_asoc(char* x);
+Var *add_bool_asoc(bool x);
 
 #define NEW_VAR(var) _Generic((var),    \
     int   : new_int_var,                \

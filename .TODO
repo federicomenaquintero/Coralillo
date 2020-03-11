@@ -10,8 +10,11 @@ PARSER:
 
 DYNAVAR:
     ☐ Make dynamic lists. @started(20-03-09 18:09)
-    ✔ Manage to typedef a generic type [to avoid writing tree equal functions] @started(20-03-09 18:09) @done(20-03-11 00:18) @lasted(1d6h9m56s)
+    ✘ Manage to typedef a generic type [to avoid writing tree equal functions] @started(20-03-09 18:09) @cancelled(20-03-11 12:41) @wasted(1d18h32m11s)
+    // Imposible because of C. Workaround: Make multiple functions and
+    // a macro to call them basen on their type.
     ✔ Add macro to automatically call new_TYPE_var based on the type. @done(20-03-11 00:18)
+    ☐ Add macro to automatically call add_TYPE_asoc.
     ☐ Handle errors.
 
 TESTS:

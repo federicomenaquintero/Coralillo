@@ -37,7 +37,34 @@ void test_new_var_macro(void)
 
     Var b = NEW_VAR(false);  /* BOOL */
     TEST_ASSERT_EQUAL(false, *(bool*)b.data);
+}
 
+void test_new_int_asoc(void)
+{
+    Var a = NEW_VAR(10);
+    a.asoc = add_int_asoc(202);
+
+    int asoc_data = *(int*)((Var*)a.asoc)->data;
+    TEST_ASSERT_EQUAL(202, asoc_data);
+}
+
+void test_new_string_asoc(void)
+{
+    Var a = NEW_VAR(10);
+    a.asoc = add_string_asoc("hola");
+
+    char* asoc_data = (char*)((Var*)a.asoc)->data;
+    int cmp = strcmp("hola", asoc_data);
+    TEST_ASSERT_EQUAL(0, cmp);
+}
+
+void test_new_bool_asoc(void)
+{
+    Var a = NEW_VAR(10);
+    a.asoc = add_bool_asoc(true);
+
+    bool asoc_data = *(bool*)((Var*)a.asoc)->data;
+    TEST_ASSERT_EQUAL(true, asoc_data);
 }
 
 int main()
@@ -48,6 +75,10 @@ int main()
     RUN_TEST(test_new_string_var);
     RUN_TEST(test_new_bool_var);
     RUN_TEST(test_new_var_macro);
+
+    RUN_TEST(test_new_int_asoc);
+    RUN_TEST(test_new_string_asoc);
+    RUN_TEST(test_new_bool_asoc);
 
     return UnityEnd();
 }

@@ -38,3 +38,36 @@ Var new_bool_var(bool x)
     
     return var;
 }
+
+Var *add_int_asoc(int x)
+{
+    // Asociate value = *(int*)((Var*)var.asoc)->data)
+    
+    Var asoc = new_int_var(x);
+    Var* space = (Var*)calloc(1, sizeof(asoc));
+    *space = asoc;
+
+    return space;
+}
+
+Var *add_string_asoc(char* x)
+{
+    // Asociate value = (char*)((Var*)var.asoc)->data
+
+    Var asoc = new_string_var(x);
+    Var* space = (Var*)calloc(1, sizeof(asoc));
+    *space = asoc;
+
+    return space;
+}
+
+Var *add_bool_asoc(bool x)
+{
+    // Asociate value = *(bool*)((Var*)var.asoc)->data
+
+    Var asoc = new_bool_var(x);
+    Var* space = (Var*)calloc(1, sizeof(asoc));
+    *space = asoc;
+
+    return space;
+}
