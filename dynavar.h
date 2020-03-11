@@ -14,11 +14,11 @@ typedef enum
     TYPE_BOOL
 } var_type;
 
+/* Probably useless */
 #define typename(t) _Generic((t),       \
     char* : TYPE_STRING,                \
     int*  : TYPE_INT,                   \
     bool* : TYPE_BOOL)                  \
-
 
 typedef struct
 {
@@ -32,10 +32,10 @@ Var new_int_var(int x);
 Var new_string_var(char *x);
 Var new_bool_var(bool x);
 
-#define new_var(var) _Generic((var),    \
-    char* : new_string_var,             \
+#define NEW_VAR(var) _Generic((var),    \
     int   : new_int_var,                \
-    bool  : new_bool_var) (var)
+    char* : new_string_var,             \
+    bool  : new_bool_var)(var)
 
 
 #endif

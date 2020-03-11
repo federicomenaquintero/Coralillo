@@ -18,4 +18,5 @@ TESTS:
     ✔ Find test suite for c. @done(20-03-11 00:19)
     // I copied some of the Unity repository
     // More info at www.throwtheswitch.org
+    ✔ Basic dynavar tests (int, string, bool vars and NEW_VAR macro). @done(20-03-11 10:48)
     ☐ Use it.
