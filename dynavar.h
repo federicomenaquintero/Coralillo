@@ -24,7 +24,7 @@ typedef struct
 {
     var_type type;
     void *data;
-    void *nxt;
+    void *asoc;
 } Var;
 
 

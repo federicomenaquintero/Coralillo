@@ -7,7 +7,7 @@ Var new_int_var(int x)
 {
     Var var;
     var.type = TYPE_INT;
-    var.nxt = NULL;
+    var.asoc = NULL;
 
     var.data = (int*)calloc(1, sizeof(int));
     *(int*)var.data = x;
@@ -19,7 +19,7 @@ Var new_string_var(char *x)
 {
     Var var;
     var.type = TYPE_STRING;
-    var.nxt = NULL;
+    var.asoc = NULL;
 
     var.data = (char*)calloc(strlen(x), sizeof(char));
     strcpy((char*)var.data, x);
@@ -31,7 +31,7 @@ Var new_bool_var(bool x)
 {
     Var var;
     var.type = TYPE_BOOL;
-    var.nxt = NULL;
+    var.asoc = NULL;
 
     var.data = (bool*)calloc(1, sizeof(bool));
     *(bool*)var.data = x;
