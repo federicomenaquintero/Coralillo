@@ -10,12 +10,12 @@ PARSER:
 
 DYNAVAR:
     ☐ Make dynamic lists. @started(20-03-09 18:09)
-    ☐ Manage to typedef a generic type [to avoid writing tree equal functions] @high @started(20-03-09 18:09)
-    ☐ Add macro to automatically call new_TYPE_var based on the type.
+    ✔ Manage to typedef a generic type [to avoid writing tree equal functions] @started(20-03-09 18:09) @done(20-03-11 00:18) @lasted(1d6h9m56s)
+    ✔ Add macro to automatically call new_TYPE_var based on the type. @done(20-03-11 00:18)
     ☐ Handle errors.
 
 TESTS:
-    ☐ Find test suite for c. @done
+    ✔ Find test suite for c. @done(20-03-11 00:19)
     // I copied some of the Unity repository
     // More info at www.throwtheswitch.org
     ☐ Use it.

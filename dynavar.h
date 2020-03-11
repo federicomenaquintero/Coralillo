@@ -7,22 +7,22 @@ typedef enum
     true
 } bool;
 
-enum t_typenames 
+typedef enum 
 {
-    TYPENAME_BOOL,
-    TYPENAME_STRING,
-    TYPENAME_INT,
-};
+    TYPE_STRING,
+    TYPE_INT,
+    TYPE_BOOL
+} var_type;
 
-#define typename(x) _Generic((x),   \
-    char* : TYPENAME_STRING,        \
-    int*  : TYPENAME_INT,           \
-    bool* : TYPENAME_BOOL)          \
+#define typename(t) _Generic((t),       \
+    char* : TYPE_STRING,                \
+    int*  : TYPE_INT,                   \
+    bool* : TYPE_BOOL)                  \
 
 
 typedef struct
 {
-    char *type;
+    var_type type;
     void *data;
     void *nxt;
 } Var;
@@ -31,6 +31,12 @@ typedef struct
 Var new_int_var(int x);
 Var new_string_var(char *x);
 Var new_bool_var(bool x);
+
+#define new_var(var) _Generic((var),    \
+    char* : new_string_var,             \
+    int   : new_int_var,                \
+    bool  : new_bool_var) (var)
+
 
 #endif
 

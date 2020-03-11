@@ -3,11 +3,10 @@
 #include <string.h>
 #include "dynavar.h"
 
-
 Var new_int_var(int x)
 {
     Var var;
-    var.type = "int";
+    var.type = TYPE_INT;
     var.nxt = NULL;
 
     var.data = (int*)calloc(1, sizeof(int));
@@ -19,40 +18,31 @@ Var new_int_var(int x)
 Var new_string_var(char *x)
 {
     Var var;
-    var.type = "string";
+    var.type = TYPE_STRING;
     var.nxt = NULL;
 
-    var.data = (char*)calloc(strlen(x), sizeof(x)); //Test
+    var.data = (char*)calloc(strlen(x), sizeof(char));
     strcpy((char*)var.data, x);
     
     return var;
 }
 
-// Npi de si esto funciona
 Var new_bool_var(bool x)
 {
     Var var;
-    var.type = "boolean";
+    var.type = TYPE_BOOL;
     var.nxt = NULL;
 
-    var.data = (bool*)calloc(1, sizeof(x));
+    var.data = (bool*)calloc(1, sizeof(bool));
     *(bool*)var.data = x;
     
     return var;
 }
 
-
 int main()
 {
-    int x = 1;
-    printf("%ld\n", sizeof(x));
-    
-    Var s = new_string_var("holaaa");
-    printf("%s -> %ld\n", (char*)s.data, strlen(s.data));
-
-    Var b = new_bool_var(false);
-    if (*(bool*)b.data == true) printf("true\n");
-    else if(*(bool*)b.data == false) printf("false\n");
+    Var a = new_var("Hola");
+    printf("%s\n", (char*)a.data);
 
     return 0;
 }
