@@ -1,8 +1,8 @@
-// Compile with gcc tests/dynavar_tests.c dynavar.c -o dynavar_tests && ./dynavar_tests
+// Compile with gcc tests/dynavar_tests.c src/dynavar.c -o dynavar_tests && ./dynavar_tests
 
 #include <string.h>
 #include "unity/unity.c"
-#include "../dynavar.h"
+#include "../src/dynavar.h"
 
 void setUp() {}
 void tearDown() {}
