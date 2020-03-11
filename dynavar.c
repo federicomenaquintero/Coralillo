@@ -39,6 +39,7 @@ Var new_bool_var(bool x)
     return var;
 }
 
+// Remove main, start using Unity for testing.
 int main()
 {
     Var a = new_var("Hola");
