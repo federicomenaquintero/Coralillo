@@ -67,6 +67,28 @@ void test_new_bool_asoc(void)
     TEST_ASSERT_EQUAL(true, asoc_data);
 }
 
+void test_new_asoc_macro(void)
+{
+    Var i = NEW_VAR(10); /* INT */
+    i.asoc = NEW_ASOC(100);
+
+    int int_asoc_data = *(int*)((Var*)i.asoc)->data;
+    TEST_ASSERT_EQUAL(100, int_asoc_data);
+
+    Var s = NEW_VAR(1); /* STRING */
+    s.asoc = NEW_ASOC("hola");
+
+    char* str_asoc_data = (char*)((Var*)s.asoc)->data;
+    int asoc_cmp = strcmp("hola", str_asoc_data);
+    TEST_ASSERT_EQUAL(0, asoc_cmp);
+
+    Var b = NEW_VAR("hola");
+    b.asoc = NEW_ASOC(false);
+
+    bool bool_asoc_data = *(bool*)((Var*)b.asoc)->data;
+    TEST_ASSERT_EQUAL(false, bool_asoc_data);
+
+}
 int main()
 {
     UnityBegin("tests/dynavar_tests.c");
@@ -79,6 +101,7 @@ int main()
     RUN_TEST(test_new_int_asoc);
     RUN_TEST(test_new_string_asoc);
     RUN_TEST(test_new_bool_asoc);
+    RUN_TEST(test_new_asoc_macro);
 
     return UnityEnd();
 }

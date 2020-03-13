@@ -14,7 +14,7 @@ DYNAVAR:
     // Imposible because of C. Workaround: Make multiple functions and
     // a macro to call them basen on their type -> Use '_Generic'
     ✔ Add macro to automatically call new_TYPE_var based on the type. @done(20-03-11 00:18)
-    ☐ Add macro to automatically call add_TYPE_asoc.
+    ✔ Add macro to automatically call add_TYPE_asoc. @done(20-03-12 18:51)
     ☐ Handle errors.
 
 TESTS:
