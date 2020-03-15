@@ -7,7 +7,7 @@ typedef enum
     true
 } bool;
 
-typedef enum 
+typedef enum
 {
     TYPE_STRING,
     TYPE_INT,
