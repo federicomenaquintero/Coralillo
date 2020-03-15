@@ -83,7 +83,7 @@ Var c = [Var6, Var7, Var8, Var9]    # una lista más
 # Var2.asoc = Var c
 # Var3.asoc = NULL
 
-De esta forma: 
+De esta forma:
 Var a = [
     [Var4.data, Var5.data],                         # Esto sería Var1
     [Var6.data, Var7.data, Var8.data, Var9.data],   # Esto Var2

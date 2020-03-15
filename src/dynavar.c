@@ -11,7 +11,7 @@ Var new_int_var(int x)
 
     var.data = (int*)calloc(1, sizeof(int));
     *(int*)var.data = x;
-    
+
     return var;
 }
 
@@ -23,7 +23,7 @@ Var new_string_var(char *x)
 
     var.data = (char*)calloc(strlen(x), sizeof(char));
     strcpy((char*)var.data, x);
-    
+
     return var;
 }
 
@@ -35,14 +35,14 @@ Var new_bool_var(bool x)
 
     var.data = (bool*)calloc(1, sizeof(bool));
     *(bool*)var.data = x;
-    
+
     return var;
 }
 
 Var *new_int_asoc(int x)
 {
     // Asociate value = *(int*)((Var*)var.asoc)->data)
-    
+
     Var asoc = new_int_var(x);
     Var* space = (Var*)calloc(1, sizeof(asoc));
     *space = asoc;
