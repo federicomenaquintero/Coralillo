@@ -1,6 +1,6 @@
 GENERAL:
     ☐ Add comments.
-    ☐ Make some sort of documentation.
+    ☐ Make some sort of documentation. @critical
 
 SYNTAX:
     ☐ Define syntax rules.
@@ -15,7 +15,7 @@ DYNAVAR:
     // a macro to call them basen on their type -> Use '_Generic'
     ✔ Add macro to automatically call new_TYPE_var based on the type. @done(20-03-11 00:18)
     ✔ Add macro to automatically call add_TYPE_asoc. @done(20-03-12 18:51)
-    ☐ Handle errors.
+    ☐ Handle and print errors.
 
 TESTS:
     ✔ Find test suite for c. @done(20-03-11 00:19)
