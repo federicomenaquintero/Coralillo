@@ -97,4 +97,3 @@ var_types type(Var *var)
 {
     return var->type;
 }
-
