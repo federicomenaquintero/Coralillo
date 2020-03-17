@@ -1,3 +1,17 @@
+/*
+
+struct Var is a container with the folowing structure:
+Var {
+    var_type    // Type of the data is storing.
+    data        // Actual sored data. This can also be another Var.
+    asoc        // Some other related Var called asociate.
+}
+
+Asociates are used to make lists. A Var can only have one asociate.
+
+*/
+
+
 #ifndef __DYNAVAR
 #define __DYNAVAR
 
@@ -12,10 +26,11 @@ typedef enum var_types
     TYPE_INT,
     TYPE_STRING,
     TYPE_BOOL,
+    TYPE_VAR,
     TYPE_NONE
 } var_types;
 
-typedef struct
+typedef struct Var
 {
     var_types type;
     void *data;
@@ -49,45 +64,3 @@ void del_var(Var *var);
 var_types type(Var *var);
 
 #endif
-
-
-
-
-/*
-
-Var contiene dos formas de datos:
-- data: el dato inmediato (un número, un string, un booleano).
-- asoc: aquel otro Var con tendrá algúna relación (principalmente para listas).
-
-Tendrá un tipo específico de dato a menos que tenga un asociado, en cuyo caso
-el tipo será: (data_types)TYPE + LIST
-
-Una lista sencilla, al descomponerla sería así:
-
-Var a = 10
-Var b = "hola"
-Var c = true
-
-Var a.asoc = Var b
-Var b.asoc = Var c
-
-Eso es equivalente a: Var a = [10, "hola", true]
-
-Una lista con listas adentro:
-
-Var a = [Var1, Var2, Var3]          # una lista
-Var b = [Var4, Var5]                # otra lista
-Var c = [Var6, Var7, Var8, Var9]    # una lista más
-
-# Var1.asoc = Var b
-# Var2.asoc = Var c
-# Var3.asoc = NULL
-
-De esta forma:
-Var a = [
-    [Var4.data, Var5.data],                         # Esto sería Var1
-    [Var6.data, Var7.data, Var8.data, Var9.data],   # Esto Var2
-    Var3.data                                       # Y aquí Var3
-]
-
-*/
