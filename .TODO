@@ -1,6 +1,7 @@
 GENERAL:
     ☐ Add comments.
     ☐ Make some sort of documentation. @critical
+    ☐ Port to Rust. @high
 
 SYNTAX:
     ☐ Define syntax rules.
