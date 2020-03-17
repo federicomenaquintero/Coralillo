@@ -1,4 +1,4 @@
-# Why Python when u can have this (WPWUCHT)
+# Coralillo
 
 A very simple proramming language. Not very useful (for now).
 

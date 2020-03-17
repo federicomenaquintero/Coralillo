@@ -2,8 +2,8 @@
 
 #include "unity/unity.c"
 
-void setUp(){}
-void tearDown(){}
+void setUp() {}
+void tearDown() {}
 
 void test_Cris_es_puto(void)
 {
