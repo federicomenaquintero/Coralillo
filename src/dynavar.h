@@ -8,6 +8,16 @@ Var {
 }
 
 Asociates are used to make lists. A Var can only have one asociate.
+List theory:
+
+list = [1, 2, "hello", true, 4]
+
+Var list;
+list.asoc = Var(1)
+Var(1).asoc = Var(2)
+Var(2).asoc = Var("hello")
+Var("hello").asoc = Var(true)
+Var(true).asoc = Var(4)
 
 */
 
@@ -15,7 +25,7 @@ Asociates are used to make lists. A Var can only have one asociate.
 #ifndef __DYNAVAR
 #define __DYNAVAR
 
-typedef enum
+typedef enum bool_type
 {
     false,
     true
