@@ -10,13 +10,17 @@ PARSER:
     ☐ Figure out how to parse...
 
 DYNAVAR:
-    ☐ Make dynamic lists. @started(20-03-09 18:09)
     ✘ Manage to typedef a generic type [to avoid writing tree equal functions] @started(20-03-09 18:09) @cancelled(20-03-11 12:41) @wasted(1d18h32m11s)
     // Imposible because of C. Workaround: Make multiple functions and
     // a macro to call them basen on their type -> Use '_Generic'
     ✔ Add macro to automatically call new_TYPE_var based on the type. @done(20-03-11 00:18)
     ✔ Add macro to automatically call add_TYPE_asoc. @done(20-03-12 18:51)
-    ☐ Manage new_TYPE_list and NEW_LIST macro.
+    ☐ Manage to store gigantic numbers (like: 13948738074623459127456012).
+    ☐ Make dynamic lists. @started(20-03-09 18:09)
+        ☐ Manage to use different data types with 'stdarg.h'.
+        ☐ Split lists in stacks of 4,294,967,295 (unsigned long limit) elements (Vars).
+        ☐ Find a way of storing data counters.
+        ☐ Manage new_TYPE_list and NEW_LIST macro.
     ☐ Handle and print errors.
 
 TESTS:
