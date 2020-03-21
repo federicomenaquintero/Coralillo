@@ -25,6 +25,7 @@ Var(true).asoc = Var(4)
 #ifndef __DYNAVAR
 #define __DYNAVAR
 
+
 typedef enum bool_type
 {
     false,
@@ -72,5 +73,12 @@ void add_bool_asoc(Var *var, bool asoc_type);
 void del_var(Var *var);
 
 var_types type(Var *var);
+
+
+Var NEW_LIST(char *fmt, ...);
+
+/* AUXILIARY FUNCTIONS FOR TESTING */
+void print_var_data(Var *v);
+void print_list(Var *list);
 
 #endif

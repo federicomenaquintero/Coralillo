@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <string.h>
 #include "dynavar.h"
 
@@ -98,3 +99,97 @@ var_types type(Var *var)
     return var->type;
 }
 
+
+Var NEW_LIST(char *fmt, ...)
+{
+    /*
+    Format(fmt) types:
+    'i'  ->  int
+    's'  ->  string
+    'b'  ->  bool
+    'v'  ->  Var
+    */
+    va_list args;
+    va_start(args, fmt);
+    
+    Var list_head;
+    Var *last_Var_parent = &list_head;
+
+    if (*fmt == 'i')
+        list_head = NEW_VAR(va_arg(args, int));
+    else if (*fmt == 's')
+        list_head = NEW_VAR(va_arg(args, char*));
+    else if (*fmt == 'b')
+        list_head = NEW_VAR(va_arg(args, bool));
+    else if (*fmt == 'v')
+        list_head = NEW_VAR(-1);
+        // In this case, i'll have to call this same function again
+        // to make the other list first, then resume the creation
+        // of the first list.
+    
+    *fmt++;
+
+    while(*fmt)
+    {
+        switch(*fmt++)
+        {
+            case 'i':
+                ADD_NEW_ASOC(last_Var_parent, va_arg(args, int));
+                last_Var_parent = (Var*)last_Var_parent->asoc;
+                break;
+            
+            case 's':
+                ADD_NEW_ASOC(last_Var_parent, va_arg(args, char*));
+                last_Var_parent = (Var*)last_Var_parent->asoc;
+                break;
+            
+            case 'b':
+                ADD_NEW_ASOC(last_Var_parent, va_arg(args, bool));
+                last_Var_parent = (Var*)last_Var_parent->asoc;
+                break;
+            
+            default: break;
+        }
+    }
+
+    va_end(args);
+    return list_head;
+}
+
+// Add case for nested list
+void print_var_data(Var *v)
+{
+    switch (v->type)
+    {
+    case TYPE_INT:
+        printf("%d ", *(int*)v->data);
+        break;
+    
+    case TYPE_STRING:
+        printf("%s ", (char*)v->data);
+        break;
+
+    case TYPE_BOOL:
+        printf((*(bool*)v->data == true) ? "True " : "False ");
+        break;
+    
+    case TYPE_NONE:
+        printf("None ");
+        break;
+
+    default:
+        break;
+    }
+}
+
+void print_list(Var *list)
+{
+    Var *last_parent = list;
+    do
+    {
+        print_var_data(last_parent);
+        last_parent = (Var*)last_parent->asoc;
+    }
+    while(last_parent->asoc != NULL);
+    print_var_data(last_parent);
+}
