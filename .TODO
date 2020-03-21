@@ -17,7 +17,8 @@ DYNAVAR:
     ✔ Add macro to automatically call add_TYPE_asoc. @done(20-03-12 18:51)
     ☐ Manage to store gigantic numbers (like: 13948738074623459127456012).
     ☐ Make dynamic lists. @started(20-03-09 18:09)
-        ☐ Manage to use different data types with 'stdarg.h'.
+        ✔ Manage to use different data types with 'stdarg.h'. @done(20-03-21 17:39)
+        ☐ Deal with nested lists.
         ☐ Split lists in stacks of 4,294,967,295 (unsigned long limit) elements (Vars).
         ☐ Find a way of storing data counters.
         ☐ Manage new_TYPE_list and NEW_LIST macro.
