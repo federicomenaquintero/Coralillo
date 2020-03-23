@@ -7,24 +7,22 @@ Var {
     asoc        // Some other related Var called asociate.
 }
 
+Vars support asociating with another Var.
 Asociates are used to make lists. A Var can only have one asociate.
-List theory:
-
-list = [1, 2, "hello", true, 4]
-
-Var list;
-list.asoc = Var(1)
-Var(1).asoc = Var(2)
-Var(2).asoc = Var("hello")
-Var("hello").asoc = Var(true)
-Var(true).asoc = Var(4)
-
+The struct List is used to deal with lists, providing basic functions like: append, pop, remove,...
+as well as a way of counting how many elements the list has.
+List {
+    size        // A Var containing the number of elements in the list.
+    first_elem  // A Var that's the first element of the list.
+}
 */
 
 
 #ifndef __DYNAVAR
 #define __DYNAVAR
 
+#define MAX_INT_SIZE 32,766
+#define MIN_INT_SIZE -32,766
 
 typedef enum bool_type
 {
@@ -37,16 +35,21 @@ typedef enum var_types
     TYPE_INT,
     TYPE_STRING,
     TYPE_BOOL,
-    TYPE_VAR,
-    TYPE_NONE
 } var_types;
 
 typedef struct Var
 {
     var_types type;
+    bool in_list;
     void *data;
     void *asoc;
 } Var;
+
+typedef struct List
+{
+    Var size;
+    Var *first_elem;
+} List;
 
 Var new_int_var(int x);
 Var new_string_var(char *x);
@@ -75,10 +78,10 @@ void del_var(Var *var);
 var_types type(Var *var);
 
 
-Var NEW_LIST(char *fmt, ...);
+List NEW_LIST(char *fmt, ...);
 
 /* AUXILIARY FUNCTIONS FOR TESTING */
 void print_var_data(Var *v);
-void print_list(Var *list);
+void print_list(List *list);
 
 #endif

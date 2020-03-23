@@ -100,18 +100,18 @@ var_types type(Var *var)
 }
 
 
-Var NEW_LIST(char *fmt, ...)
+List NEW_LIST(char *fmt, ...)
 {
     /*
     Format(fmt) types:
     'i'  ->  int
     's'  ->  string
     'b'  ->  bool
-    'v'  ->  Var
+    'l'  ->  List
     */
     va_list args;
     va_start(args, fmt);
-    
+
     Var list_head;
     Var *last_Var_parent = &list_head;
 
@@ -121,40 +121,79 @@ Var NEW_LIST(char *fmt, ...)
         list_head = NEW_VAR(va_arg(args, char*));
     else if (*fmt == 'b')
         list_head = NEW_VAR(va_arg(args, bool));
-    else if (*fmt == 'v')
+    else if (*fmt == 'l')
         list_head = NEW_VAR(-1);
-        // In this case, i'll have to call this same function again
-        // to make the other list first, then resume the creation
-        // of the first list.
-    
+    // In this case, i'll have to call this same function again
+    // to make the other list first, then resume the creation
+    // of the first list.
+
     *fmt++;
 
     while(*fmt)
     {
         switch(*fmt++)
         {
-            case 'i':
-                ADD_NEW_ASOC(last_Var_parent, va_arg(args, int));
-                last_Var_parent = (Var*)last_Var_parent->asoc;
-                break;
-            
-            case 's':
-                ADD_NEW_ASOC(last_Var_parent, va_arg(args, char*));
-                last_Var_parent = (Var*)last_Var_parent->asoc;
-                break;
-            
-            case 'b':
-                ADD_NEW_ASOC(last_Var_parent, va_arg(args, bool));
-                last_Var_parent = (Var*)last_Var_parent->asoc;
-                break;
-            
-            default: break;
+        case 'i':
+            ADD_NEW_ASOC(last_Var_parent, va_arg(args, int));
+            last_Var_parent->in_list = true;
+            last_Var_parent = (Var*)last_Var_parent->asoc;
+            break;
+
+        case 's':
+            ADD_NEW_ASOC(last_Var_parent, va_arg(args, char*));
+            last_Var_parent->in_list = true;
+            last_Var_parent = (Var*)last_Var_parent->asoc;
+            break;
+
+        case 'b':
+            ADD_NEW_ASOC(last_Var_parent, va_arg(args, bool));
+            last_Var_parent->in_list = true;
+            last_Var_parent = (Var*)last_Var_parent->asoc;
+            break;
+
+        case 'l':
+
+            break;
+
+        default:
+            continue;
+            break;
         }
+
+        // Call function to add 1 to var value
     }
 
     va_end(args);
-    return list_head;
+    
+    Var *list_space = (Var*)calloc(1, sizeof(list_head));
+    *list_space = list_head;
+
+    List new_list;
+    new_list.first_elem = list_space;
+    
+    return new_list;
 }
+
+// List CREATE_NEW_LIST(char *fmt, char *data)
+// {
+//     /*
+//     Format(fmt) types:
+//     'i'  ->  int
+//     's'  ->  string
+//     'b'  ->  bool
+//     'l'  ->  List
+
+//     Data:
+//     int     ->  i[...]
+//     string  ->  s[...]
+//     bool    ->  b[...]
+//     list    ->  l[...]
+//     */
+
+//     Var list_head;
+//     Var *last_Var_parent = &list_head;
+
+// }
 
 // Add case for nested list
 void print_var_data(Var *v)
@@ -164,7 +203,7 @@ void print_var_data(Var *v)
     case TYPE_INT:
         printf("%d ", *(int*)v->data);
         break;
-    
+
     case TYPE_STRING:
         printf("%s ", (char*)v->data);
         break;
@@ -172,24 +211,19 @@ void print_var_data(Var *v)
     case TYPE_BOOL:
         printf((*(bool*)v->data == true) ? "True " : "False ");
         break;
-    
-    case TYPE_NONE:
-        printf("None ");
-        break;
 
     default:
         break;
     }
 }
 
-void print_list(Var *list)
+void print_list(List *list)
 {
-    Var *last_parent = list;
-    do
+    Var *last_parent = list->first_elem;
+    while(last_parent->asoc != NULL)
     {
         print_var_data(last_parent);
         last_parent = (Var*)last_parent->asoc;
     }
-    while(last_parent->asoc != NULL);
     print_var_data(last_parent);
 }
