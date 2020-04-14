@@ -1,0 +1,27 @@
+a = 20
+// this_is_a_var = true
+// this_is_a_str = "Hello, world!"
+
+list = [1, 2, 3] // Hello
+
+= 10 // Invalid
+10 = // Invalid
+
+
+for i in 0->10:
+    // do something
+
+while a > 0:
+    // do something
+    a--
+
+loop:
+    // infinite loop
+    break
+
+
+fn foo(arg):
+    print(arg)
+
+fn bar(arg:str):
+    print(arg.len)

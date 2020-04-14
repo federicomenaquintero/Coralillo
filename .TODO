@@ -6,7 +6,8 @@ GENERAL:
     ☐ Port to Rust. @high
 
 SYNTAX:
-    ☐ Define syntax rules.
+    ✔ Define syntax rules. @done(20-04-14 17:24)
+    ☐ Make basic lexer (python). @started(20-04-14 17:24)
 
 PARSER:
     ☐ Figure out how to parse...
