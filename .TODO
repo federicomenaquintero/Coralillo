@@ -21,7 +21,7 @@ DYNAVAR:
     ☐ Manage to store gigantic numbers (like: 13948738074623459127456012).
     ☐ Make dynamic lists. @started(20-03-09 18:09)
         ✘ Manage to use different data types with 'stdarg.h'. @cancelled(20-03-22 21:56)
-        // Forgetting strarg.h favouting char*.
+        // Forgetting strarg.h favouring char*.
         ☐ Deal with nested lists.
             ☐ Format parser.
         ✘ Split lists in stacks of 4,294,967,295 (unsigned long limit) elements (Vars). @cancelled(20-03-22 21:35)
