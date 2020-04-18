@@ -9,6 +9,13 @@ class TipoToken(enum.Enum):
     Oper_Div = 4
     Paren_Izq = 5
     Paren_Der = 6
+    
+class Token:
+    def __init__(self, tipo: TipoToken):
+        self.tipo = tipo
+        
+    def __eq__(self, other):
+        return self.tipo == other.tipo
 
 def tokeniza(input_: str):
     if len(input_) == 0:
@@ -20,9 +27,9 @@ def tokeniza(input_: str):
         caracter = input_[cursor:cursor + 1]
 
         if caracter == '+':
-            tokens.append(TipoToken.Oper_Mas)
+            tokens.append(Token(TipoToken.Oper_Mas))
         elif caracter == '-':
-            tokens.append(TipoToken.Oper_Menos)
+            tokens.append(Token(TipoToken.Oper_Menos))
         elif caracter == ' ':
             cursor += 1
             continue
@@ -36,9 +43,12 @@ class Pruebas(unittest.TestCase):
         self.assertEqual(tokeniza(""), [])
 
     def test_tokeniza_un_operador(self):
-        self.assertEqual(tokeniza("+"), [ TipoToken.Oper_Mas ])
+        self.assertEqual(tokeniza("+"), [ Token(TipoToken.Oper_Mas) ])
 
     def test_tokeniza_dos_operadores(self):
-        self.assertEqual(tokeniza("+ -"), [ TipoToken.Oper_Mas, TipoToken.Oper_Menos ])
+        self.assertEqual(tokeniza("+ -"), [ 
+            Token(TipoToken.Oper_Mas),
+            Token(TipoToken.Oper_Menos)
+        ])
 
 unittest.main()
