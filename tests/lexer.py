@@ -17,8 +17,12 @@ def tokeniza(input_: str):
     cursor = 0
     tokens = []
     while cursor < len(input_):
-        if input_[cursor:cursor + 1] == '+':
+        caracter = input_[cursor:cursor + 1]
+
+        if caracter == '+':
             tokens.append(TipoToken.Oper_Mas)
+        elif caracter == '-':
+            tokens.append(TipoToken.Oper_Menos)
 
         cursor += 1
 
@@ -30,5 +34,8 @@ class Pruebas(unittest.TestCase):
 
     def test_tokeniza_un_operador(self):
         self.assertEqual(tokeniza("+"), [ TipoToken.Oper_Mas ])
+
+    def test_tokeniza_dos_operadores(self):
+        self.assertEqual(tokeniza("+ -"), [ TipoToken.Oper_Mas, TipoToken.Oper_Menos ])
 
 unittest.main()
