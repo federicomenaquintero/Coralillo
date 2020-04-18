@@ -42,6 +42,14 @@ def tokeniza(input_: str):
             tokens.append(Token().simple(TipoToken.Oper_Mas))
         elif caracter == '-':
             tokens.append(Token().simple(TipoToken.Oper_Menos))
+        elif caracter == '*':
+            tokens.append(Token().simple(TipoToken.Oper_Mul))
+        elif caracter == '/':
+            tokens.append(Token().simple(TipoToken.Oper_Div))
+        elif caracter == '(':
+            tokens.append(Token().simple(TipoToken.Paren_Izq))
+        elif caracter == ')':
+            tokens.append(Token().simple(TipoToken.Paren_Der))
 
         elif caracter == ' ':
             cursor += 1
@@ -59,13 +67,14 @@ class Pruebas(unittest.TestCase):
     def test_no_hay_tokens(self):
         self.assertEqual(tokeniza(""), [])
 
-    def test_tokeniza_un_operador(self):
-        self.assertEqual(tokeniza("+"), [ Token().simple(TipoToken.Oper_Mas) ])
-
-    def test_tokeniza_dos_operadores(self):
-        self.assertEqual(tokeniza("+ -"), [ 
+    def test_tokeniza_tokens_simples(self):
+        self.assertEqual(tokeniza("+ -*    / ()"), [ 
             Token().simple(TipoToken.Oper_Mas),
-            Token().simple(TipoToken.Oper_Menos)
+            Token().simple(TipoToken.Oper_Menos),
+            Token().simple(TipoToken.Oper_Mul),
+            Token().simple(TipoToken.Oper_Div),
+            Token().simple(TipoToken.Paren_Izq),
+            Token().simple(TipoToken.Paren_Der),
         ])
         
     def test_encuentra_token_no_esperado(self):
