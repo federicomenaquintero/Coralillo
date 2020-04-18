@@ -23,6 +23,9 @@ def tokeniza(input_: str):
             tokens.append(TipoToken.Oper_Mas)
         elif caracter == '-':
             tokens.append(TipoToken.Oper_Menos)
+        elif caracter == ' ':
+            cursor += 1
+            continue
 
         cursor += 1
 
