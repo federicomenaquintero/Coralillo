@@ -92,12 +92,12 @@ class Pruebas(unittest.TestCase):
         ])
         
     def test_encuentra_token_no_esperado(self):
-        tokens = tokeniza("+hola")
+        tokens = tokeniza("1234hola")
         self.assertEqual(tokens, [ 
-            Token().simple(TipoToken.Oper_Mas), 
+            Token().numero(1234), 
             Token().simple(TipoToken.Error) 
         ])
-        self.assertEqual(tokens[1].error_pos, 1)
+        self.assertEqual(tokens[1].error_pos, 4)
         self.assertEqual(tokens[1].error_msg, "unexpected token")
         
     def test_tokeniza_numero(self):
