@@ -28,6 +28,11 @@ class Token:
         self.error_pos = posicion
         self.error_msg = mensaje
         return self
+        
+    def numero(self, valor):
+        self.tipo = TipoToken.Numero
+        self.valor_num = valor
+        return self
 
 def tokeniza(input_: str):
     if len(input_) == 0:
@@ -58,6 +63,15 @@ def tokeniza(input_: str):
         elif caracter not in CARACTERES_BUENOS:
             tokens.append(Token().error(cursor, "unexpected token"))
             return tokens
+        
+        else:
+            principio = cursor
+            while cursor < len(input_) and input_[cursor] in CARACTERES_BUENOS:
+                cursor += 1
+            
+            num = int(input_[principio:cursor])
+            tokens.append(Token().numero(num))
+            continue
 
         cursor += 1
 
@@ -85,6 +99,13 @@ class Pruebas(unittest.TestCase):
         ])
         self.assertEqual(tokens[1].error_pos, 1)
         self.assertEqual(tokens[1].error_msg, "unexpected token")
+        
+    def test_tokeniza_numero(self):
+        tokens = tokeniza("1234")
+        self.assertEqual(tokens, [ Token().numero(1234) ])
+        self.assertEqual(tokens[0].valor_num, 1234)
+        
+        
 
 
 unittest.main()
