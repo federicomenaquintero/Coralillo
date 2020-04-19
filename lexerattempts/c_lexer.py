@@ -123,6 +123,14 @@ def tokenize(line:str):
                 cursor += 1
                 continue
 
+            elif cursor < len(line):
+                next_char = line[cursor +1:cursor +2]
+                
+                if current_char + next_char in TOKEN_SYMBOLS:
+                    tokens.append(Token().simple(TOKEN_SYMBOLS[current_char + next_char]))
+                    cursor += 2
+                    continue
+
             tokens.append(Token().simple(TOKEN_SYMBOLS[current_char]))
 
         elif current_char in VALID_IDENTIFIER_CHARS:
@@ -219,6 +227,16 @@ class TokenTests(unittest.TestCase):
         self.assertEqual(tokens, expected)
         self.assertEqual(tokens[0].pos, 0)
         self.assertEqual(tokens[0].msg, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar])
+
+    def test_double_char_tokens(self):
+        symbs = list(TOKEN_SYMBOLS.keys())[17:]
+        
+        for t in symbs:
+            tokens = tokenize(t)
+            expected = [Token().simple(TOKEN_SYMBOLS[t])]
+
+            self.assertEqual(tokens, expected)
+
 
 if __name__ == "__main__":
     unittest.main()
