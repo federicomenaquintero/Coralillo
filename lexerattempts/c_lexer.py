@@ -3,44 +3,65 @@ import unittest, enum
 from string import ascii_letters, digits
 
 class TokenType(enum.Enum):
-    Error =      -1
-    Identifier = 0
-    Number =     1
+    Error =     -1
+    Number =     0
+    String =     1
+    Identifier = 2
     
-    Opr_Sum =   2 # +
-    Opr_Sub =   3 # -
-    Opr_Mul =   4 # *
-    Opr_Div =   5 # /
-    Opr_Eq =    6 # =
-    Opr_Not =   7 # !
-    Opr_Ter =   8 # ?
+    Opr_Plus =  3 # +
+    Opr_Min =   4 # -
+    Opr_Star =  5 # *
+    Opr_Slash = 6 # /
+    Opr_Eq =    7 # =
+    Opr_Not =   8 # !
+    Opr_Ter =   9 # ?
     
-    Sep_Dot =    9 # .
-    Sep_Comm =  10 # ,
-    Sep_DDot =  11 # :
-    Sep_DCom =  12 # ;
+    Opr_MThan = 10 # >
+    Opr_LThan = 11 # <
 
-    Agr_LPar =  13 # (
-    Agr_RPar =  14 # )
+    Sep_Dot =   12 # .
+    Sep_Comm =  13 # ,
+    Sep_DDot =  14 # :
+    Sep_DCom =  15 # ;
+    Sep_Quote = 16 # "
+
+    Agr_LPar =  17 # (
+    Agr_RPar =  18 # )
+    
+    Opr_PlusEq =  19 # +=
+    Opr_MinEq =   20 # -=
+    Opr_StarEq =  21 # *=
+    Opr_SlashEq = 22 # /=
+    Opr_NotEq =   23 # !=
+    Opr_EqEq =    24 # ==
 
 TOKEN_SYMBOLS = {
-    '+': TokenType.Opr_Sum,
-    '-': TokenType.Opr_Sub,
-    '*': TokenType.Opr_Mul,
-    '/': TokenType.Opr_Div,
-    '=': TokenType.Opr_Eq,
+    '+': TokenType.Opr_Plus,
+    '-': TokenType.Opr_Min,
+    '*': TokenType.Opr_Star,
+    '/': TokenType.Opr_Slash,
     '!': TokenType.Opr_Not,
+    '=': TokenType.Opr_Eq,
     '?': TokenType.Opr_Ter,
+    '>': TokenType.Opr_MThan,
+    '<': TokenType.Opr_LThan,
 
     '.': TokenType.Sep_Dot,
     ':': TokenType.Sep_DDot,
     ',': TokenType.Sep_Comm,
     ';': TokenType.Sep_DCom,
+    '"': TokenType.Sep_Quote,
 
     '(': TokenType.Agr_LPar,
     ')': TokenType.Agr_RPar, 
+    
+    '+=': TokenType.Opr_PlusEq,
+    '-=': TokenType.Opr_MinEq,
+    '*=': TokenType.Opr_StarEq,
+    '/=': TokenType.Opr_SlashEq,
+    '!=': TokenType.Opr_NotEq,
+    '==': TokenType.Opr_EqEq,
 }
-
 
 VALID_IDENTIFIER_CHARS = tuple(ascii_letters + "_ñÑ")
 VALID_NUMBER_CHARS = tuple(digits)
@@ -67,26 +88,54 @@ class Token:
         self.value = value
         return self
 
+    def string(self, value:str):
+        self.type = TokenType.String
+        self.value = value
+        return self
+
     def indentifier(self, name:str):
         self.type = TokenType.Identifier
         self.name = name
         return self
 
 def tokenize(line:str):
-
     tokens = []
     cursor = 0
     while cursor < len(line):
         current_char = line[cursor:cursor +1]
         
         if current_char in TOKEN_SYMBOLS.keys():
+            if current_char == '"':
+                _rem_line = line[cursor+1:]
+                next_quote = _rem_line.find('"')
+                
+                if next_quote > -1:
+                    string_text = line[cursor:next_quote]
+                    tokens.append(Token().simple(TokenType.Sep_Quote))
+                    tokens.append(Token().string(string_text))
+                    tokens.append(Token().simple(TokenType.Sep_Quote))
+                else: # Error
+                    pass
+
+
             tokens.append(Token().simple(TOKEN_SYMBOLS[current_char]))
 
         elif current_char in VALID_IDENTIFIER_CHARS:
-            pass
+            first_pos = cursor
+            while cursor < len(line) and line[cursor] in VALID_IDENTIFIER_CHARS:
+                cursor += 1
+
+            tokens.append(Token().indentifier(line[first_pos:cursor]))
+            continue
 
         elif current_char in VALID_NUMBER_CHARS:
-            pass
+            first_pos = cursor
+            while cursor < len(line) and line[cursor] in VALID_NUMBER_CHARS:
+                cursor += 1
+
+            num = int(line[first_pos:cursor])
+            tokens.append(Token().number(num))
+            continue
 
         elif current_char == ' ':
             cursor += 1
@@ -100,8 +149,49 @@ def tokenize(line:str):
     return tokens
 
 
-print(tokenize('()'))
-
 class TokenTests(unittest.TestCase):
     def test_empty_token(self):
-        pass
+        tokens = tokenize('')
+        expected = []
+        
+        self.assertEqual(tokens, expected)
+
+    def test_single_operator_token(self):
+        symbs = list(TOKEN_SYMBOLS)[0:16]
+
+        for t in symbs:
+            tokens = tokenize(t)
+            expected = [Token().simple(TOKEN_SYMBOLS[t])]
+            
+            self.assertEqual(tokens, expected)
+
+    def test_multiple_non_ligated_operator_separator_agrupation_tokens(self):
+        tokens = tokenize('-.=:;+(<')
+        expected = [
+            Token().simple(TokenType.Opr_Min),
+            Token().simple(TokenType.Sep_Dot),
+            Token().simple(TokenType.Opr_Eq),
+            Token().simple(TokenType.Sep_DDot),
+            Token().simple(TokenType.Sep_DCom),
+            Token().simple(TokenType.Opr_Plus),
+            Token().simple(TokenType.Agr_LPar),
+            Token().simple(TokenType.Opr_LThan),
+        ]
+
+        self.assertEqual(tokens, expected)
+
+    def test_identifier_token(self):
+        tokens = tokenize('Hola ')
+        expected = [Token().indentifier('Hola')]
+
+        self.assertEqual(tokens, expected)
+        self.assertEqual(tokens[0].name, 'Hola')
+
+    def test_number_token(self):
+        tokens = tokenize('1234')
+        expected = [Token().number(1234)]
+        
+        self.assertEqual(tokens, expected)
+
+if __name__ == "__main__":
+    unittest.main()
