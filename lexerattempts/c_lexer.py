@@ -256,7 +256,15 @@ class TokenTests(unittest.TestCase):
 
             self.assertEqual(tokens, expected)
 
+    def test_comments(self):
+        tokens = tokenize("1234 ho//la mi nombre es cris #")
+        expected = [
+            Token().number(1234),
+            Token().indentifier('ho'),
+            Token().simple(TokenType.Comment),
+        ]
+
+        self.assertEqual(tokens, expected)
 
 if __name__ == "__main__":
     unittest.main()
-    # tokenize('"Hola"')
