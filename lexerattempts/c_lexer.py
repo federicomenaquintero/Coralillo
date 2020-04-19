@@ -121,7 +121,7 @@ def tokenize(line:str):
         current_char = line[cursor:cursor +1]
         
         if current_char in TOKEN_SYMBOLS.keys():
-            if current_char == '"':
+            if current_char == '"': # Strings
 
                 if cursor < len(line):
                     first_quote = Token().quote(cursor)
@@ -139,7 +139,7 @@ def tokenize(line:str):
                     cursor += second_quote_pos +2
                     continue
 
-            elif cursor < len(line):
+            elif cursor < len(line): # Double char tokens
                 next_char = line[cursor +1:cursor +2]
                 
                 if current_char + next_char in TOKEN_SYMBOLS:
