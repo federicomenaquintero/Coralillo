@@ -266,5 +266,19 @@ class TokenTests(unittest.TestCase):
 
         self.assertEqual(tokens, expected)
 
+    def test_general(self):
+        tokens = tokenize('Hola, "Esto es un string" -> 123 //')
+        expected = [
+            Token().indentifier('Hola'),
+            Token().simple(TokenType.Sep_Comm),
+            Token().quote(6),
+            Token().quote(24),
+            Token().simple(TokenType.LArrow),
+            Token().number(123),
+            Token().simple(TokenType.Comment),
+        ]
+
+        self.assertEqual(tokens, expected)
+
 if __name__ == "__main__":
     unittest.main()
