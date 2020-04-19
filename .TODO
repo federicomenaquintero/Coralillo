@@ -8,6 +8,7 @@ GENERAL:
 SYNTAX:
     ✔ Define syntax rules. @done(20-04-14 17:24)
     ☐ Make basic lexer (python). @started(20-04-14 17:24)
+        ☐ Figure out how to handle strings.
 
 PARSER:
     ☐ Figure out how to parse...
