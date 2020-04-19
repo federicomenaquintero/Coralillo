@@ -8,7 +8,8 @@ GENERAL:
 SYNTAX:
     ✔ Define syntax rules. @done(20-04-14 17:24)
     ☐ Make basic lexer (python). @started(20-04-14 17:24)
-        ☐ Figure out how to handle strings.
+        ✔ Figure out how to handle strings. @done(20-04-19 15:42)
+        // Save the positions of the quotes, the parser later'll take whatever's in between.
 
 PARSER:
     ☐ Figure out how to parse...
