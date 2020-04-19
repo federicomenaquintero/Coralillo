@@ -4,7 +4,8 @@ from string import ascii_letters, digits
 
 class TokenType(enum.Enum):
     Error =     -1
-    Number =     0
+    Comment =    0
+    Number =     1
     Identifier = 2
     
     Opr_Plus =  3 # +
@@ -34,6 +35,8 @@ class TokenType(enum.Enum):
     Opr_NotEq =   23 # !=
     Opr_EqEq =    24 # ==
 
+    LArrow = 25 # ->
+
 TOKEN_SYMBOLS = {
     '+': TokenType.Opr_Plus,
     '-': TokenType.Opr_Min,
@@ -60,6 +63,16 @@ TOKEN_SYMBOLS = {
     '/=': TokenType.Opr_SlashEq,
     '!=': TokenType.Opr_NotEq,
     '==': TokenType.Opr_EqEq,
+    '->': TokenType.LArrow,
+    '//': TokenType.Comment
+}
+
+class ErrorMsgs(enum.Enum):
+    UnexpectedChar = 0
+
+
+ERROR_MESSAGES = {
+    ErrorMsgs.UnexpectedChar: "Unexpected Character",
 }
 
 VALID_IDENTIFIER_CHARS = tuple(ascii_letters + "_ñÑ")
@@ -78,8 +91,8 @@ class Token:
 
     def error(self, pos:int, msg:str):
         self.type = TokenType.Error
-        self.error_pos = pos
-        self.error_msg = msg
+        self.pos = pos
+        self.msg = msg
         return self
 
     def number(self, value:int):
@@ -96,6 +109,7 @@ class Token:
         self.type = TokenType.Identifier
         self.name = name
         return self
+
 
 def tokenize(line:str):
     tokens = []
@@ -133,7 +147,8 @@ def tokenize(line:str):
             continue
 
         else: # Error
-            pass
+            tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar]))
+            return tokens
 
         cursor += 1
 
@@ -196,6 +211,14 @@ class TokenTests(unittest.TestCase):
         self.assertEqual(tokens[0].pos, 0)
         self.assertEqual(tokens[1].name, 'Hola')
         self.assertEqual(tokens[2].pos, 5)
+
+    def test_error_msg(self):
+        tokens = tokenize('#')
+        expected = [Token().error(0, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar])]
+
+        self.assertEqual(tokens, expected)
+        self.assertEqual(tokens[0].pos, 0)
+        self.assertEqual(tokens[0].msg, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar])
 
 if __name__ == "__main__":
     unittest.main()
