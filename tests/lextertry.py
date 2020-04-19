@@ -73,8 +73,9 @@ def separate_line_by_strings(space_separated_line:list):
     return string_separated_expressions
 
 def separate_line_by_operators(string_separated_line:str):
-    pass
-
+    cursor = 0
+    while cursor < len(string_separated_line[0]):
+        
 
 def split_elements(line:str):
 
