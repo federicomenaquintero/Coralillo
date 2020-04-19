@@ -127,7 +127,12 @@ def tokenize(line:str):
                 next_char = line[cursor +1:cursor +2]
                 
                 if current_char + next_char in TOKEN_SYMBOLS:
-                    tokens.append(Token().simple(TOKEN_SYMBOLS[current_char + next_char]))
+                    new_token_type = TOKEN_SYMBOLS[current_char + next_char]
+                    tokens.append(Token().simple(new_token_type))
+                    
+                    if new_token_type == TokenType.Comment:
+                        return tokens
+                    
                     cursor += 2
                     continue
 
