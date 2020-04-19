@@ -69,10 +69,12 @@ TOKEN_SYMBOLS = {
 
 class ErrorMsgs(enum.Enum):
     UnexpectedChar = 0
+    MissingQuote =   1
 
 
 ERROR_MESSAGES = {
     ErrorMsgs.UnexpectedChar: "Unexpected Character",
+    ErrorMsgs.MissingQuote: "Missing Quote"
 }
 
 VALID_IDENTIFIER_CHARS = tuple(ascii_letters + "_ñÑ")
@@ -100,28 +102,42 @@ class Token:
         self.value = value
         return self
 
-    def quote(self, pos:int):
-        self.type = TokenType.Sep_Quote
-        self.pos = pos
-        return self
-
     def indentifier(self, name:str):
         self.type = TokenType.Identifier
         self.name = name
+        return self
+
+    def quote(self, pos:int):
+        self.type = TokenType.Sep_Quote
+        self.pos = pos
         return self
 
 
 def tokenize(line:str):
     tokens = []
     cursor = 0
+
     while cursor < len(line):
         current_char = line[cursor:cursor +1]
         
         if current_char in TOKEN_SYMBOLS.keys():
             if current_char == '"':
-                tokens.append(Token().quote(cursor))
-                cursor += 1
-                continue
+
+                if cursor < len(line):
+                    first_quote = Token().quote(cursor)
+                    _rm_line = line[cursor+1:]
+
+                    second_quote_pos = _rm_line.find('"')
+                    if second_quote_pos == -1: #Error
+                        tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.MissingQuote]))
+                        return tokens
+
+                    second_quote = Token().quote(second_quote_pos + cursor+1)
+                    tokens.append(first_quote)
+                    tokens.append(second_quote)
+
+                    cursor += second_quote_pos +2
+                    continue
 
             elif cursor < len(line):
                 next_char = line[cursor +1:cursor +2]
@@ -176,7 +192,7 @@ class TokenTests(unittest.TestCase):
         self.assertEqual(tokens, expected)
 
     def test_single_operator_token(self):
-        symbs = list(TOKEN_SYMBOLS)[0:16]
+        symbs = tuple("+-*/!?=<>.,:;()")
 
         for t in symbs:
             tokens = tokenize(t)
@@ -216,14 +232,12 @@ class TokenTests(unittest.TestCase):
         tokens = tokenize('"Hola"')
         expected = [
             Token().quote(0),
-            Token().indentifier('Hola'),
             Token().quote(5),
         ]
 
         self.assertEqual(tokens, expected)
         self.assertEqual(tokens[0].pos, 0)
-        self.assertEqual(tokens[1].name, 'Hola')
-        self.assertEqual(tokens[2].pos, 5)
+        self.assertEqual(tokens[1].pos, 5)
 
     def test_error_msg(self):
         tokens = tokenize('#')
@@ -245,3 +259,4 @@ class TokenTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+    # tokenize('"Hola"')
