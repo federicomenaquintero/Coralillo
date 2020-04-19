@@ -5,7 +5,6 @@ from string import ascii_letters, digits
 class TokenType(enum.Enum):
     Error =     -1
     Number =     0
-    String =     1
     Identifier = 2
     
     Opr_Plus =  3 # +
@@ -88,9 +87,9 @@ class Token:
         self.value = value
         return self
 
-    def string(self, value:str):
-        self.type = TokenType.String
-        self.value = value
+    def quote(self, pos:int):
+        self.type = TokenType.Sep_Quote
+        self.pos = pos
         return self
 
     def indentifier(self, name:str):
@@ -106,17 +105,9 @@ def tokenize(line:str):
         
         if current_char in TOKEN_SYMBOLS.keys():
             if current_char == '"':
-                _rem_line = line[cursor+1:]
-                next_quote = _rem_line.find('"')
-                
-                if next_quote > -1:
-                    string_text = line[cursor:next_quote]
-                    tokens.append(Token().simple(TokenType.Sep_Quote))
-                    tokens.append(Token().string(string_text))
-                    tokens.append(Token().simple(TokenType.Sep_Quote))
-                else: # Error
-                    pass
-
+                tokens.append(Token().quote(cursor))
+                cursor += 1
+                continue
 
             tokens.append(Token().simple(TOKEN_SYMBOLS[current_char]))
 
@@ -192,6 +183,19 @@ class TokenTests(unittest.TestCase):
         expected = [Token().number(1234)]
         
         self.assertEqual(tokens, expected)
+
+    def test_quote_tokens(self):
+        tokens = tokenize('"Hola"')
+        expected = [
+            Token().quote(0),
+            Token().indentifier('Hola'),
+            Token().quote(5),
+        ]
+
+        self.assertEqual(tokens, expected)
+        self.assertEqual(tokens[0].pos, 0)
+        self.assertEqual(tokens[1].name, 'Hola')
+        self.assertEqual(tokens[2].pos, 5)
 
 if __name__ == "__main__":
     unittest.main()
