@@ -7,23 +7,23 @@ class TokenType(enum.Enum):
     Comment     = 0
     Number      = 1
     Identifier  = 2
+    String      = 3
 
-    Opr_Plus    = 3 # +
-    Opr_Min     = 4 # -
-    Opr_Star    = 5 # *
-    Opr_Slash   = 6 # /
-    Opr_Eq      = 7 # =
-    Opr_Not     = 8 # !
-    Opr_Ter     = 9 # ?
+    Opr_Plus    = 4 # +
+    Opr_Min     = 5 # -
+    Opr_Star    = 6 # *
+    Opr_Slash   = 7 # /
+    Opr_Eq      = 8 # =
+    Opr_Not     = 9 # !
+    Opr_Ter     = 10 # ?
 
-    Opr_MThan   = 10 # >
-    Opr_LThan   = 11 # <
+    Opr_MThan   = 11 # >
+    Opr_LThan   = 12 # <
 
-    Sep_Dot     = 12 # .
-    Sep_Comm    = 13 # ,
-    Sep_DDot    = 14 # :
-    Sep_DCom    = 15 # ;
-    Sep_Quote   = 16 # "
+    Sep_Dot     = 13 # .
+    Sep_Comm    = 14 # ,
+    Sep_DDot    = 15 # :
+    Sep_DCom    = 16 # ;
 
     Agr_LPar    = 17 # (
     Agr_RPar    = 18 # )
@@ -52,7 +52,6 @@ SINGLE_CHARACTER_SYMBOLS = {
     ':': TokenType.Sep_DDot,
     ',': TokenType.Sep_Comm,
     ';': TokenType.Sep_DCom,
-    '"': TokenType.Sep_Quote,
 
     '(': TokenType.Agr_LPar,
     ')': TokenType.Agr_RPar,
@@ -109,9 +108,9 @@ class Token:
         self.name = name
         return self
 
-    def quote(self, pos:int):
-        self.type = TokenType.Sep_Quote
-        self.pos = pos
+    def string(self, s:str):
+        self.type = TokenType.String
+        self.string = s
         return self
 
 def tokenize(line:str):
@@ -121,26 +120,21 @@ def tokenize(line:str):
     while cursor < len(line):
         current_char = line[cursor:cursor +1]
 
-        if current_char in SINGLE_CHARACTER_SYMBOLS.keys():
-            if current_char == '"': # Strings
+        if current_char == '"': # Strings
+            _rm_line = line[cursor+1:]
 
-                if cursor < len(line):
-                    first_quote = Token().quote(cursor)
-                    _rm_line = line[cursor+1:]
+            second_quote_pos = _rm_line.find('"')
+            if second_quote_pos == -1: #Error
+                tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.MissingQuote]))
+                break
 
-                    second_quote_pos = _rm_line.find('"')
-                    if second_quote_pos == -1: #Error
-                        tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.MissingQuote]))
-                        break
+            tokens.append(Token().string(_rm_line[:second_quote_pos]))
 
-                    second_quote = Token().quote(second_quote_pos + cursor+1)
-                    tokens.append(first_quote)
-                    tokens.append(second_quote)
+            cursor += second_quote_pos + 2
+            continue
 
-                    cursor += second_quote_pos +2
-                    continue
-
-            elif cursor < len(line): # Double char tokens
+        elif current_char in SINGLE_CHARACTER_SYMBOLS.keys():
+            if cursor < len(line): # Double char tokens
                 next_char = line[cursor +1:cursor +2]
 
                 if current_char + next_char in MULTIPLE_CHARACTER_SYMBOLS:
@@ -225,16 +219,15 @@ class TokenTests(unittest.TestCase):
 
         self.assertEqual(tokens, expected)
 
-    def test_quote_tokens(self):
-        tokens = tokenize('"Hola"')
+    def test_string_tokens(self):
+        tokens = tokenize('123 "Hola mundo" "hola"')
         expected = [
-            Token().quote(0),
-            Token().quote(5),
+            Token().number(123),
+            Token().string("Hola mundo"),
+            Token().string("hola"),
         ]
 
         self.assertEqual(tokens, expected)
-        self.assertEqual(tokens[0].pos, 0)
-        self.assertEqual(tokens[1].pos, 5)
 
     def test_error_msg(self):
         tokens = tokenize('#')
@@ -268,8 +261,7 @@ class TokenTests(unittest.TestCase):
         expected = [
             Token().indentifier('Hola'),
             Token().simple(TokenType.Sep_Comm),
-            Token().quote(6),
-            Token().quote(24),
+            Token().string("Esto es un string"),
             Token().simple(TokenType.LArrow),
             Token().number(123),
             Token().simple(TokenType.Comment),
