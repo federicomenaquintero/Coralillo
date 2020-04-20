@@ -1,41 +1,42 @@
 # My lexer attempt
-import unittest, enum
+import unittest
+from enum import Enum, auto
 from string import ascii_letters, digits
 
-class TokenType(enum.Enum):
-    Error       = -1
-    Comment     = 0
-    Number      = 1
-    Identifier  = 2
-    String      = 3
+class TokenType(Enum):
+    Error       = auto()
+    Comment     = auto()
+    Number      = auto()
+    Identifier  = auto()
+    String      = auto()
 
-    Opr_Plus    = 4 # +
-    Opr_Min     = 5 # -
-    Opr_Star    = 6 # *
-    Opr_Slash   = 7 # /
-    Opr_Eq      = 8 # =
-    Opr_Not     = 9 # !
-    Opr_Ter     = 10 # ?
+    Opr_Plus    = auto() # +
+    Opr_Min     = auto() # -
+    Opr_Star    = auto() # *
+    Opr_Slash   = auto() # /
+    Opr_Eq      = auto() # =
+    Opr_Not     = auto() # !
+    Opr_Ter     = auto() # ?
 
-    Opr_MThan   = 11 # >
-    Opr_LThan   = 12 # <
+    Opr_MThan   = auto() # >
+    Opr_LThan   = auto() # <
 
-    Sep_Dot     = 13 # .
-    Sep_Comm    = 14 # ,
-    Sep_DDot    = 15 # :
-    Sep_DCom    = 16 # ;
+    Sep_Dot     = auto() # .
+    Sep_Comm    = auto() # ,
+    Sep_DDot    = auto() # :
+    Sep_DCom    = auto() # ;
 
-    Agr_LPar    = 17 # (
-    Agr_RPar    = 18 # )
+    Agr_LPar    = auto() # (
+    Agr_RPar    = auto() # )
 
-    Opr_PlusEq  = 19 # +=
-    Opr_MinEq   = 20 # -=
-    Opr_StarEq  = 21 # *=
-    Opr_SlashEq = 22 # /=
-    Opr_NotEq   = 23 # !=
-    Opr_EqEq    = 24 # ==
+    Opr_PlusEq  = auto() # +=
+    Opr_MinEq   = auto() # -=
+    Opr_StarEq  = auto() # *=
+    Opr_SlashEq = auto() # /=
+    Opr_NotEq   = auto() # !=
+    Opr_EqEq    = auto() # ==
 
-    LArrow      = 25 # ->
+    LArrow      = auto() # ->
 
 SINGLE_CHARACTER_SYMBOLS = {
     '+': TokenType.Opr_Plus,
@@ -68,10 +69,9 @@ MULTIPLE_CHARACTER_SYMBOLS = {
     '//': TokenType.Comment,
 }
 
-class ErrorMsgs(enum.Enum):
-    UnexpectedChar = 0
-    MissingQuote =   1
-
+class ErrorMsgs(Enum):
+    UnexpectedChar     = auto()
+    MissingQuote       = auto()
 
 ERROR_MESSAGES = {
     ErrorMsgs.UnexpectedChar: "Unexpected Character",
