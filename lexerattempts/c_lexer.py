@@ -130,7 +130,7 @@ def tokenize(line:str):
                     second_quote_pos = _rm_line.find('"')
                     if second_quote_pos == -1: #Error
                         tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.MissingQuote]))
-                        return tokens
+                        break
 
                     second_quote = Token().quote(second_quote_pos + cursor+1)
                     tokens.append(first_quote)
@@ -147,7 +147,7 @@ def tokenize(line:str):
                     tokens.append(Token().simple(new_token_type))
                     
                     if new_token_type == TokenType.Comment:
-                        return tokens
+                        break
                     
                     cursor += 2
                     continue
@@ -177,7 +177,7 @@ def tokenize(line:str):
 
         else: # Error
             tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar]))
-            return tokens
+            break
 
         cursor += 1
 
