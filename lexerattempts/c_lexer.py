@@ -69,12 +69,12 @@ TOKEN_SYMBOLS = {
 
 class ErrorMsgs(enum.Enum):
     UnexpectedChar = 0
-    MissingQuote =   1
+    # MissingQuote =   1
 
 
 ERROR_MESSAGES = {
     ErrorMsgs.UnexpectedChar: "Unexpected Character",
-    ErrorMsgs.MissingQuote: "Missing Quote"
+    # ErrorMsgs.MissingQuote: "Missing Quote"
 }
 
 VALID_IDENTIFIER_CHARS = tuple(ascii_letters + "_ñÑ")
@@ -116,30 +116,19 @@ class Token:
 def tokenize(line:str):
     tokens = []
     cursor = 0
+    inside_parenthesis = False
 
     while cursor < len(line):
         current_char = line[cursor:cursor +1]
         
-        if current_char in TOKEN_SYMBOLS.keys():
-            if current_char == '"': # Strings
+        if current_char == '"': # Strings
+            inside_parenthesis = not inside_parenthesis
+            tokens.append(Token().quote(cursor))
+            cursor += 1
+            continue
 
-                if cursor < len(line):
-                    first_quote = Token().quote(cursor)
-                    _rm_line = line[cursor+1:]
-
-                    second_quote_pos = _rm_line.find('"')
-                    if second_quote_pos == -1: #Error
-                        tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.MissingQuote]))
-                        return tokens
-
-                    second_quote = Token().quote(second_quote_pos + cursor+1)
-                    tokens.append(first_quote)
-                    tokens.append(second_quote)
-
-                    cursor += second_quote_pos +2
-                    continue
-
-            elif cursor < len(line): # Double char tokens
+        if not inside_parenthesis:
+            if current_char in TOKEN_SYMBOLS.keys() and cursor < len(line): # Double char tokens
                 next_char = line[cursor +1:cursor +2]
                 
                 if current_char + next_char in TOKEN_SYMBOLS:
@@ -152,32 +141,32 @@ def tokenize(line:str):
                     cursor += 2
                     continue
 
-            tokens.append(Token().simple(TOKEN_SYMBOLS[current_char]))
+                tokens.append(Token().simple(TOKEN_SYMBOLS[current_char]))
 
-        elif current_char in VALID_IDENTIFIER_CHARS:
-            first_pos = cursor
-            while cursor < len(line) and line[cursor] in VALID_IDENTIFIER_CHARS:
+            elif current_char in VALID_IDENTIFIER_CHARS:
+                first_pos = cursor
+                while cursor < len(line) and line[cursor] in VALID_IDENTIFIER_CHARS:
+                    cursor += 1
+
+                tokens.append(Token().indentifier(line[first_pos:cursor]))
+                continue
+
+            elif current_char in VALID_NUMBER_CHARS:
+                first_pos = cursor
+                while cursor < len(line) and line[cursor] in VALID_NUMBER_CHARS:
+                    cursor += 1
+
+                num = int(line[first_pos:cursor])
+                tokens.append(Token().number(num))
+                continue
+
+            elif current_char == ' ':
                 cursor += 1
+                continue
 
-            tokens.append(Token().indentifier(line[first_pos:cursor]))
-            continue
-
-        elif current_char in VALID_NUMBER_CHARS:
-            first_pos = cursor
-            while cursor < len(line) and line[cursor] in VALID_NUMBER_CHARS:
-                cursor += 1
-
-            num = int(line[first_pos:cursor])
-            tokens.append(Token().number(num))
-            continue
-
-        elif current_char == ' ':
-            cursor += 1
-            continue
-
-        else: # Error
-            tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar]))
-            return tokens
+            else: # Error
+                tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar]))
+                return tokens
 
         cursor += 1
 
@@ -192,7 +181,7 @@ class TokenTests(unittest.TestCase):
         self.assertEqual(tokens, expected)
 
     def test_single_operator_token(self):
-        symbs = tuple("+-*/!?=<>.,:;()")
+        symbs = tuple('"+-*/!?=<>.,:;()')
 
         for t in symbs:
             tokens = tokenize(t)
@@ -238,6 +227,19 @@ class TokenTests(unittest.TestCase):
         self.assertEqual(tokens, expected)
         self.assertEqual(tokens[0].pos, 0)
         self.assertEqual(tokens[1].pos, 5)
+
+    def test_uneven_number_of_quotes(self):
+        tokens = tokenize('"""')
+        expected = [
+            Token().quote(0),
+            Token().quote(1),
+            Token().quote(2),
+        ]
+
+        self.assertEqual(tokens, expected)
+        self.assertEqual(tokens[0].pos, 0)
+        self.assertEqual(tokens[1].pos, 1)
+        self.assertEqual(tokens[2].pos, 2)
 
     def test_error_msg(self):
         tokens = tokenize('#')
