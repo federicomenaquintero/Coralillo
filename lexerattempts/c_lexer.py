@@ -139,6 +139,7 @@ def tokenize(line:str):
 
     while cursor < len(line):
         current_char = line[cursor:cursor +1]
+        next_char = line[cursor + 1:cursor + 2]
 
         if current_char == '"': # Strings
             _rm_line = line[cursor+1:]
@@ -154,9 +155,7 @@ def tokenize(line:str):
             continue
 
         elif current_char in SINGLE_CHARACTER_SYMBOLS.keys():
-            if cursor < len(line): # Double char tokens
-                next_char = line[cursor +1:cursor +2]
-
+            if next_char != '': # Double char tokens
                 if current_char + next_char in MULTIPLE_CHARACTER_SYMBOLS:
                     new_token_type = MULTIPLE_CHARACTER_SYMBOLS[current_char + next_char]
                     tokens.append(Token().simple(new_token_type))
