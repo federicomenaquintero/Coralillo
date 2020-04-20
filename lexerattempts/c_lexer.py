@@ -154,18 +154,16 @@ def tokenize(line:str):
             cursor += second_quote_pos + 2
             continue
 
-        elif current_char in SINGLE_CHARACTER_SYMBOLS.keys():
-            if next_char != '': # Double char tokens
-                if current_char + next_char in MULTIPLE_CHARACTER_SYMBOLS:
-                    new_token_type = MULTIPLE_CHARACTER_SYMBOLS[current_char + next_char]
-                    tokens.append(Token().simple(new_token_type))
+        elif current_char + next_char in MULTIPLE_CHARACTER_SYMBOLS:
+            token = Token().simple(MULTIPLE_CHARACTER_SYMBOLS[current_char + next_char])
+            tokens.append(token)
 
-                    if new_token_type == TokenType.Comment:
-                        break
+            if token.type == TokenType.Comment:
+                break
 
-                    cursor += 2
-                    continue
+            cursor += 2
 
+        elif current_char in SINGLE_CHARACTER_SYMBOLS:
             tokens.append(Token().simple(SINGLE_CHARACTER_SYMBOLS[current_char]))
             cursor += 1
 
