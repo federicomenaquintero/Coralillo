@@ -133,6 +133,29 @@ class Token:
         self.svalue = s
         return self
 
+# Reads a string token.  Assumes the line starts with a " character.
+#
+# Returns a tuple (token, n_skip)
+#
+# If the line has a valid string token, this function returns a token
+# with Token.type = TokenType.String, and n_skip with the number of
+# characters that must be skipped over to find the next token.
+#
+# If the line does not have a valid string token, this function
+# returns a token with Token.type = TokenType.Error, and n_skip will
+# have a useless value.
+def consume_string(line: str):
+    first = line[0]
+    assert(first == '"')
+
+    _rm_line = line[1:]
+
+    second_quote_pos = _rm_line.find('"')
+    if second_quote_pos == -1: #Error
+        return Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.MissingQuote]), -1
+
+    return Token().string(_rm_line[:second_quote_pos]), second_quote_pos + 2
+
 def tokenize(line:str):
     tokens = []
     cursor = 0
@@ -142,16 +165,13 @@ def tokenize(line:str):
         next_char = line[cursor + 1:cursor + 2]
 
         if current_char == '"': # Strings
-            _rm_line = line[cursor+1:]
-
-            second_quote_pos = _rm_line.find('"')
-            if second_quote_pos == -1: #Error
-                tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.MissingQuote]))
+            token, n_skip = consume_string(line[cursor:])
+            tokens.append(token)
+            if token.type == TokenType.String:
+                cursor += n_skip
+            else:
+                # an error was detected
                 break
-
-            tokens.append(Token().string(_rm_line[:second_quote_pos]))
-
-            cursor += second_quote_pos + 2
 
         elif current_char + next_char in MULTIPLE_CHARACTER_SYMBOLS:
             token = Token().simple(MULTIPLE_CHARACTER_SYMBOLS[current_char + next_char])
