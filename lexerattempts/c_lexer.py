@@ -7,7 +7,7 @@ class TokenType(enum.Enum):
     Comment =    0
     Number =     1
     Identifier = 2
-    
+
     Opr_Plus =  3 # +
     Opr_Min =   4 # -
     Opr_Star =  5 # *
@@ -15,7 +15,7 @@ class TokenType(enum.Enum):
     Opr_Eq =    7 # =
     Opr_Not =   8 # !
     Opr_Ter =   9 # ?
-    
+
     Opr_MThan = 10 # >
     Opr_LThan = 11 # <
 
@@ -27,7 +27,7 @@ class TokenType(enum.Enum):
 
     Agr_LPar =  17 # (
     Agr_RPar =  18 # )
-    
+
     Opr_PlusEq =  19 # +=
     Opr_MinEq =   20 # -=
     Opr_StarEq =  21 # *=
@@ -37,7 +37,7 @@ class TokenType(enum.Enum):
 
     LArrow = 25 # ->
 
-TOKEN_SYMBOLS = {
+SINGLE_CHARACTER_SYMBOLS = {
     '+': TokenType.Opr_Plus,
     '-': TokenType.Opr_Min,
     '*': TokenType.Opr_Star,
@@ -55,8 +55,10 @@ TOKEN_SYMBOLS = {
     '"': TokenType.Sep_Quote,
 
     '(': TokenType.Agr_LPar,
-    ')': TokenType.Agr_RPar, 
-    
+    ')': TokenType.Agr_RPar,
+}
+
+MULTIPLE_CHARACTER_SYMBOLS = {
     '+=': TokenType.Opr_PlusEq,
     '-=': TokenType.Opr_MinEq,
     '*=': TokenType.Opr_StarEq,
@@ -64,7 +66,7 @@ TOKEN_SYMBOLS = {
     '!=': TokenType.Opr_NotEq,
     '==': TokenType.Opr_EqEq,
     '->': TokenType.LArrow,
-    '//': TokenType.Comment
+    '//': TokenType.Comment,
 }
 
 class ErrorMsgs(enum.Enum):
@@ -112,15 +114,14 @@ class Token:
         self.pos = pos
         return self
 
-
 def tokenize(line:str):
     tokens = []
     cursor = 0
 
     while cursor < len(line):
         current_char = line[cursor:cursor +1]
-        
-        if current_char in TOKEN_SYMBOLS.keys():
+
+        if current_char in SINGLE_CHARACTER_SYMBOLS.keys():
             if current_char == '"': # Strings
 
                 if cursor < len(line):
@@ -141,18 +142,18 @@ def tokenize(line:str):
 
             elif cursor < len(line): # Double char tokens
                 next_char = line[cursor +1:cursor +2]
-                
-                if current_char + next_char in TOKEN_SYMBOLS:
-                    new_token_type = TOKEN_SYMBOLS[current_char + next_char]
+
+                if current_char + next_char in MULTIPLE_CHARACTER_SYMBOLS:
+                    new_token_type = MULTIPLE_CHARACTER_SYMBOLS[current_char + next_char]
                     tokens.append(Token().simple(new_token_type))
-                    
+
                     if new_token_type == TokenType.Comment:
                         break
-                    
+
                     cursor += 2
                     continue
 
-            tokens.append(Token().simple(TOKEN_SYMBOLS[current_char]))
+            tokens.append(Token().simple(SINGLE_CHARACTER_SYMBOLS[current_char]))
             cursor += 1
 
         elif current_char in VALID_IDENTIFIER_CHARS:
@@ -184,16 +185,16 @@ class TokenTests(unittest.TestCase):
     def test_empty_token(self):
         tokens = tokenize('')
         expected = []
-        
+
         self.assertEqual(tokens, expected)
 
-    def test_single_operator_token(self):
+    def test_single_character_token(self):
         symbs = tuple("+-*/!?=<>.,:;()")
 
         for t in symbs:
             tokens = tokenize(t)
-            expected = [Token().simple(TOKEN_SYMBOLS[t])]
-            
+            expected = [Token().simple(SINGLE_CHARACTER_SYMBOLS[t])]
+
             self.assertEqual(tokens, expected)
 
     def test_multiple_non_ligated_operator_separator_agrupation_tokens(self):
@@ -221,7 +222,7 @@ class TokenTests(unittest.TestCase):
     def test_number_token(self):
         tokens = tokenize('1234')
         expected = [Token().number(1234)]
-        
+
         self.assertEqual(tokens, expected)
 
     def test_quote_tokens(self):
@@ -244,11 +245,11 @@ class TokenTests(unittest.TestCase):
         self.assertEqual(tokens[0].msg, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar])
 
     def test_double_char_tokens(self):
-        symbs = list(TOKEN_SYMBOLS.keys())[17:]
-        
+        symbs = list(MULTIPLE_CHARACTER_SYMBOLS.keys())
+
         for t in symbs:
             tokens = tokenize(t)
-            expected = [Token().simple(TOKEN_SYMBOLS[t])]
+            expected = [Token().simple(MULTIPLE_CHARACTER_SYMBOLS[t])]
 
             self.assertEqual(tokens, expected)
 
