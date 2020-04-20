@@ -83,7 +83,27 @@ VALID_NUMBER_CHARS = tuple(digits)
 
 class Token:
     def __eq__(self, other):
-        return self.type == other.type
+        if self.type != other.type:
+            return False
+        elif self.type in SINGLE_CHARACTER_SYMBOLS.values():
+            return True
+        elif self.type in MULTIPLE_CHARACTER_SYMBOLS.values():
+            return True
+        elif self.type == TokenType.Error:
+            return self.pos == other.pos and self.msg == other.msg
+        elif self.type == TokenType.Comment:
+            # We don't store the contents of comments, so all comments are equivalent
+            return True
+        elif self.type == TokenType.Number:
+            return self.value == other.value
+        elif self.type == TokenType.Identifier:
+            return self.name == other.name
+        elif self.type == TokenType.String:
+            return self.string == other.string
+        else:
+            # Return False in case we forget to add another case above
+            # if we add another TokenType
+            return False
 
     def __repr__(self):
         return str(self.type)
@@ -174,6 +194,22 @@ def tokenize(line:str):
 
     return tokens
 
+class TokenEqTests(unittest.TestCase):
+    def test_different_tokens(self):
+        self.assertNotEqual(Token().identifier("hola"), Token().identifier("mundo"))
+        self.assertNotEqual(Token().number(123), Token().number(456))
+        self.assertNotEqual(Token().number(1), Token().simple(TokenType.Opr_Plus))
+        self.assertNotEqual(Token().simple(TokenType.Opr_Plus), Token().simple(TokenType.Opr_Min))
+        self.assertNotEqual(Token().string("hola"), Token().string("mundo"))
+        self.assertNotEqual(Token().error(1, "hola"), Token().error(2, "hola"))
+        self.assertNotEqual(Token().error(1, "hola"), Token().error(1, "mundo"))
+
+    def test_equal_tokens(self):
+        self.assertEqual(Token().simple(TokenType.Opr_Plus), Token().simple(TokenType.Opr_Plus))
+        self.assertEqual(Token().number(123), Token().number(123))
+        self.assertEqual(Token().identifier("hola"), Token().identifier("hola"))
+        self.assertEqual(Token().string("hola"), Token().string("hola"))
+        self.assertEqual(Token().error(2, "hola"), Token().error(2, "hola"))
 
 class TokenTests(unittest.TestCase):
     def test_empty_token(self):
