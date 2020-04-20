@@ -73,11 +73,13 @@ class ErrorMsgs(Enum):
     UnexpectedChar     = auto()
     MissingQuote       = auto()
     UnterminatedEscape = auto()
+    InvalidEscape      = auto()
 
 ERROR_MESSAGES = {
     ErrorMsgs.UnexpectedChar: "Unexpected Character",
     ErrorMsgs.MissingQuote: "Missing Quote",
     ErrorMsgs.UnterminatedEscape: "Unterminated escape",
+    ErrorMsgs.InvalidEscape: "Invalid escape character, only \" and \\ are valid",
 }
 
 VALID_IDENTIFIER_CHARS = tuple(ascii_letters + "_ñÑ")
@@ -108,7 +110,11 @@ class Token:
             return False
 
     def __repr__(self):
-        return str(self.type)
+        s = str(self.type)
+        if self.type == TokenType.Error:
+            s += ": pos=%s msg=%s" % (self.pos, self.msg)
+
+        return s
 
     def simple(self, _type:TokenType):
         self.type = _type
@@ -156,8 +162,11 @@ def consume_string(line: str, start_pos: int):
 
     for idx, ch in enumerate(line[1:]):
         if in_escape:
-            result += ch
-            in_escape = False
+            if ch == '\\' or ch == '"':
+                result += ch
+                in_escape = False
+            else:
+                return Token().error(start_pos + idx + 1, ERROR_MESSAGES[ErrorMsgs.InvalidEscape]), -1
         elif ch == '\\':
             in_escape = True
         elif ch == '"':
@@ -303,6 +312,13 @@ class TokenTests(unittest.TestCase):
         tokens = tokenize('"hola\\')
         expected = [
             Token().error(5, ERROR_MESSAGES[ErrorMsgs.UnterminatedEscape])
+        ]
+        self.assertEqual(tokens, expected)
+
+    def test_string_with_invalid_escape(self):
+        tokens = tokenize('"hola\\q"')
+        expected = [
+            Token().error(6, ERROR_MESSAGES[ErrorMsgs.InvalidEscape])
         ]
         self.assertEqual(tokens, expected)
 
