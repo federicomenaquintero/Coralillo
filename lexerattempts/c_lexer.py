@@ -3,41 +3,41 @@ import unittest, enum
 from string import ascii_letters, digits
 
 class TokenType(enum.Enum):
-    Error =     -1
-    Comment =    0
-    Number =     1
-    Identifier = 2
-    
-    Opr_Plus =  3 # +
-    Opr_Min =   4 # -
-    Opr_Star =  5 # *
-    Opr_Slash = 6 # /
-    Opr_Eq =    7 # =
-    Opr_Not =   8 # !
-    Opr_Ter =   9 # ?
-    
-    Opr_MThan = 10 # >
-    Opr_LThan = 11 # <
+    Error       = -1
+    Comment     = 0
+    Number      = 1
+    Identifier  = 2
+    String      = 3
 
-    Sep_Dot =   12 # .
-    Sep_Comm =  13 # ,
-    Sep_DDot =  14 # :
-    Sep_DCom =  15 # ;
-    Sep_Quote = 16 # "
+    Opr_Plus    = 4 # +
+    Opr_Min     = 5 # -
+    Opr_Star    = 6 # *
+    Opr_Slash   = 7 # /
+    Opr_Eq      = 8 # =
+    Opr_Not     = 9 # !
+    Opr_Ter     = 10 # ?
 
-    Agr_LPar =  17 # (
-    Agr_RPar =  18 # )
-    
-    Opr_PlusEq =  19 # +=
-    Opr_MinEq =   20 # -=
-    Opr_StarEq =  21 # *=
+    Opr_MThan   = 11 # >
+    Opr_LThan   = 12 # <
+
+    Sep_Dot     = 13 # .
+    Sep_Comm    = 14 # ,
+    Sep_DDot    = 15 # :
+    Sep_DCom    = 16 # ;
+
+    Agr_LPar    = 17 # (
+    Agr_RPar    = 18 # )
+
+    Opr_PlusEq  = 19 # +=
+    Opr_MinEq   = 20 # -=
+    Opr_StarEq  = 21 # *=
     Opr_SlashEq = 22 # /=
-    Opr_NotEq =   23 # !=
-    Opr_EqEq =    24 # ==
+    Opr_NotEq   = 23 # !=
+    Opr_EqEq    = 24 # ==
 
-    LArrow = 25 # ->
+    LArrow      = 25 # ->
 
-TOKEN_SYMBOLS = {
+SINGLE_CHARACTER_SYMBOLS = {
     '+': TokenType.Opr_Plus,
     '-': TokenType.Opr_Min,
     '*': TokenType.Opr_Star,
@@ -52,11 +52,12 @@ TOKEN_SYMBOLS = {
     ':': TokenType.Sep_DDot,
     ',': TokenType.Sep_Comm,
     ';': TokenType.Sep_DCom,
-    '"': TokenType.Sep_Quote,
 
     '(': TokenType.Agr_LPar,
-    ')': TokenType.Agr_RPar, 
-    
+    ')': TokenType.Agr_RPar,
+}
+
+MULTIPLE_CHARACTER_SYMBOLS = {
     '+=': TokenType.Opr_PlusEq,
     '-=': TokenType.Opr_MinEq,
     '*=': TokenType.Opr_StarEq,
@@ -64,17 +65,17 @@ TOKEN_SYMBOLS = {
     '!=': TokenType.Opr_NotEq,
     '==': TokenType.Opr_EqEq,
     '->': TokenType.LArrow,
-    '//': TokenType.Comment
+    '//': TokenType.Comment,
 }
 
 class ErrorMsgs(enum.Enum):
     UnexpectedChar = 0
-    # MissingQuote =   1
+    MissingQuote =   1
 
 
 ERROR_MESSAGES = {
     ErrorMsgs.UnexpectedChar: "Unexpected Character",
-    # ErrorMsgs.MissingQuote: "Missing Quote"
+    ErrorMsgs.MissingQuote: "Missing Quote"
 }
 
 VALID_IDENTIFIER_CHARS = tuple(ascii_letters + "_ñÑ")
@@ -82,7 +83,27 @@ VALID_NUMBER_CHARS = tuple(digits)
 
 class Token:
     def __eq__(self, other):
-        return self.type == other.type
+        if self.type != other.type:
+            return False
+        elif self.type in SINGLE_CHARACTER_SYMBOLS.values():
+            return True
+        elif self.type in MULTIPLE_CHARACTER_SYMBOLS.values():
+            return True
+        elif self.type == TokenType.Error:
+            return self.pos == other.pos and self.msg == other.msg
+        elif self.type == TokenType.Comment:
+            # We don't store the contents of comments, so all comments are equivalent
+            return True
+        elif self.type == TokenType.Number:
+            return self.value == other.value
+        elif self.type == TokenType.Identifier:
+            return self.name == other.name
+        elif self.type == TokenType.String:
+            return self.string == other.string
+        else:
+            # Return False in case we forget to add another case above
+            # if we add another TokenType
+            return False
 
     def __repr__(self):
         return str(self.type)
@@ -102,91 +123,104 @@ class Token:
         self.value = value
         return self
 
-    def indentifier(self, name:str):
+    def identifier(self, name:str):
         self.type = TokenType.Identifier
         self.name = name
         return self
 
-    def quote(self, pos:int):
-        self.type = TokenType.Sep_Quote
-        self.pos = pos
+    def string(self, s:str):
+        self.type = TokenType.String
+        self.string = s
         return self
-
 
 def tokenize(line:str):
     tokens = []
     cursor = 0
-    inside_parenthesis = False
 
     while cursor < len(line):
         current_char = line[cursor:cursor +1]
-        
+        next_char = line[cursor + 1:cursor + 2]
+
         if current_char == '"': # Strings
-            inside_parenthesis = not inside_parenthesis
-            tokens.append(Token().quote(cursor))
+            _rm_line = line[cursor+1:]
+
+            second_quote_pos = _rm_line.find('"')
+            if second_quote_pos == -1: #Error
+                tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.MissingQuote]))
+                break
+
+            tokens.append(Token().string(_rm_line[:second_quote_pos]))
+
+            cursor += second_quote_pos + 2
+
+        elif current_char + next_char in MULTIPLE_CHARACTER_SYMBOLS:
+            token = Token().simple(MULTIPLE_CHARACTER_SYMBOLS[current_char + next_char])
+            tokens.append(token)
+
+            if token.type == TokenType.Comment:
+                break
+
+            cursor += 2
+
+        elif current_char in SINGLE_CHARACTER_SYMBOLS:
+            tokens.append(Token().simple(SINGLE_CHARACTER_SYMBOLS[current_char]))
             cursor += 1
-            continue
 
-        if not inside_parenthesis:
-            if current_char in TOKEN_SYMBOLS.keys() and cursor < len(line): # Double char tokens
-                next_char = line[cursor +1:cursor +2]
-                
-                if current_char + next_char in TOKEN_SYMBOLS:
-                    new_token_type = TOKEN_SYMBOLS[current_char + next_char]
-                    tokens.append(Token().simple(new_token_type))
-                    
-                    if new_token_type == TokenType.Comment:
-                        return tokens
-                    
-                    cursor += 2
-                    continue
-
-                tokens.append(Token().simple(TOKEN_SYMBOLS[current_char]))
-
-            elif current_char in VALID_IDENTIFIER_CHARS:
-                first_pos = cursor
-                while cursor < len(line) and line[cursor] in VALID_IDENTIFIER_CHARS:
-                    cursor += 1
-
-                tokens.append(Token().indentifier(line[first_pos:cursor]))
-                continue
-
-            elif current_char in VALID_NUMBER_CHARS:
-                first_pos = cursor
-                while cursor < len(line) and line[cursor] in VALID_NUMBER_CHARS:
-                    cursor += 1
-
-                num = int(line[first_pos:cursor])
-                tokens.append(Token().number(num))
-                continue
-
-            elif current_char == ' ':
+        elif current_char in VALID_IDENTIFIER_CHARS:
+            first_pos = cursor
+            while cursor < len(line) and line[cursor] in VALID_IDENTIFIER_CHARS:
                 cursor += 1
-                continue
 
-            else: # Error
-                tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar]))
-                return tokens
+            tokens.append(Token().identifier(line[first_pos:cursor]))
 
-        cursor += 1
+        elif current_char in VALID_NUMBER_CHARS:
+            first_pos = cursor
+            while cursor < len(line) and line[cursor] in VALID_NUMBER_CHARS:
+                cursor += 1
+
+            num = int(line[first_pos:cursor])
+            tokens.append(Token().number(num))
+
+        elif current_char == ' ':
+            cursor += 1
+
+        else: # Error
+            tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar]))
+            break
 
     return tokens
 
+class TokenEqTests(unittest.TestCase):
+    def test_different_tokens(self):
+        self.assertNotEqual(Token().identifier("hola"), Token().identifier("mundo"))
+        self.assertNotEqual(Token().number(123), Token().number(456))
+        self.assertNotEqual(Token().number(1), Token().simple(TokenType.Opr_Plus))
+        self.assertNotEqual(Token().simple(TokenType.Opr_Plus), Token().simple(TokenType.Opr_Min))
+        self.assertNotEqual(Token().string("hola"), Token().string("mundo"))
+        self.assertNotEqual(Token().error(1, "hola"), Token().error(2, "hola"))
+        self.assertNotEqual(Token().error(1, "hola"), Token().error(1, "mundo"))
+
+    def test_equal_tokens(self):
+        self.assertEqual(Token().simple(TokenType.Opr_Plus), Token().simple(TokenType.Opr_Plus))
+        self.assertEqual(Token().number(123), Token().number(123))
+        self.assertEqual(Token().identifier("hola"), Token().identifier("hola"))
+        self.assertEqual(Token().string("hola"), Token().string("hola"))
+        self.assertEqual(Token().error(2, "hola"), Token().error(2, "hola"))
 
 class TokenTests(unittest.TestCase):
     def test_empty_token(self):
         tokens = tokenize('')
         expected = []
-        
+
         self.assertEqual(tokens, expected)
 
-    def test_single_operator_token(self):
-        symbs = tuple('"+-*/!?=<>.,:;()')
+    def test_single_character_token(self):
+        symbs = tuple("+-*/!?=<>.,:;()")
 
         for t in symbs:
             tokens = tokenize(t)
-            expected = [Token().simple(TOKEN_SYMBOLS[t])]
-            
+            expected = [Token().simple(SINGLE_CHARACTER_SYMBOLS[t])]
+
             self.assertEqual(tokens, expected)
 
     def test_multiple_non_ligated_operator_separator_agrupation_tokens(self):
@@ -206,55 +240,38 @@ class TokenTests(unittest.TestCase):
 
     def test_identifier_token(self):
         tokens = tokenize('Hola ')
-        expected = [Token().indentifier('Hola')]
+        expected = [Token().identifier('Hola')]
 
         self.assertEqual(tokens, expected)
-        self.assertEqual(tokens[0].name, 'Hola')
 
     def test_number_token(self):
         tokens = tokenize('1234')
         expected = [Token().number(1234)]
-        
+
         self.assertEqual(tokens, expected)
 
-    def test_quote_tokens(self):
-        tokens = tokenize('"Hola"')
+    def test_string_tokens(self):
+        tokens = tokenize('123 "Hola mundo" "hola"')
         expected = [
-            Token().quote(0),
-            Token().quote(5),
+            Token().number(123),
+            Token().string("Hola mundo"),
+            Token().string("hola"),
         ]
 
         self.assertEqual(tokens, expected)
-        self.assertEqual(tokens[0].pos, 0)
-        self.assertEqual(tokens[1].pos, 5)
-
-    def test_uneven_number_of_quotes(self):
-        tokens = tokenize('"""')
-        expected = [
-            Token().quote(0),
-            Token().quote(1),
-            Token().quote(2),
-        ]
-
-        self.assertEqual(tokens, expected)
-        self.assertEqual(tokens[0].pos, 0)
-        self.assertEqual(tokens[1].pos, 1)
-        self.assertEqual(tokens[2].pos, 2)
 
     def test_error_msg(self):
         tokens = tokenize('#')
         expected = [Token().error(0, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar])]
 
         self.assertEqual(tokens, expected)
-        self.assertEqual(tokens[0].pos, 0)
-        self.assertEqual(tokens[0].msg, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar])
 
     def test_double_char_tokens(self):
-        symbs = list(TOKEN_SYMBOLS.keys())[17:]
-        
+        symbs = list(MULTIPLE_CHARACTER_SYMBOLS.keys())
+
         for t in symbs:
             tokens = tokenize(t)
-            expected = [Token().simple(TOKEN_SYMBOLS[t])]
+            expected = [Token().simple(MULTIPLE_CHARACTER_SYMBOLS[t])]
 
             self.assertEqual(tokens, expected)
 
@@ -262,7 +279,7 @@ class TokenTests(unittest.TestCase):
         tokens = tokenize("1234 ho//la mi nombre es cris #")
         expected = [
             Token().number(1234),
-            Token().indentifier('ho'),
+            Token().identifier('ho'),
             Token().simple(TokenType.Comment),
         ]
 
@@ -271,10 +288,9 @@ class TokenTests(unittest.TestCase):
     def test_general(self):
         tokens = tokenize('Hola, "Esto es un string" -> 123 //')
         expected = [
-            Token().indentifier('Hola'),
+            Token().identifier('Hola'),
             Token().simple(TokenType.Sep_Comm),
-            Token().quote(6),
-            Token().quote(24),
+            Token().string("Esto es un string"),
             Token().simple(TokenType.LArrow),
             Token().number(123),
             Token().simple(TokenType.Comment),
