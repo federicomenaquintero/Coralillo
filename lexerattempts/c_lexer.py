@@ -308,7 +308,7 @@ class TokenTests(unittest.TestCase):
         ]
         self.assertEqual(tokens, expected)
 
-        tokens = tokenize('"hola \\"')
+        tokens = tokenize(r'"hola \"')
         expected = [
             Token().error(0, ERROR_MESSAGES[ErrorMsgs.MissingQuote])
         ]
@@ -322,18 +322,18 @@ class TokenTests(unittest.TestCase):
         self.assertEqual(tokens, expected)
 
     def test_string_with_invalid_escape(self):
-        tokens = tokenize('"hola\\q"')
+        tokens = tokenize(r'"hola\q"')
         expected = [
             Token().error(6, ERROR_MESSAGES[ErrorMsgs.InvalidEscape])
         ]
         self.assertEqual(tokens, expected)
 
     def test_string_tokens(self):
-        tokens = tokenize('123 "Hola mundo" "hola \\"mundo\\" \\\\\\\\"')
+        tokens = tokenize(r'123 "Hola mundo" "hola \"mundo\" \\\\"')
         expected = [
             Token().number(123),
             Token().string("Hola mundo"),
-            Token().string('hola "mundo" \\\\'),
+            Token().string(r'hola "mundo" \\'),
         ]
 
         self.assertEqual(tokens, expected)
