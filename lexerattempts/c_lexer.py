@@ -154,7 +154,6 @@ def tokenize(line:str):
 
             tokens.append(Token().simple(TOKEN_SYMBOLS[current_char]))
             cursor += 1
-            continue
 
         elif current_char in VALID_IDENTIFIER_CHARS:
             first_pos = cursor
@@ -162,7 +161,6 @@ def tokenize(line:str):
                 cursor += 1
 
             tokens.append(Token().indentifier(line[first_pos:cursor]))
-            continue
 
         elif current_char in VALID_NUMBER_CHARS:
             first_pos = cursor
@@ -171,11 +169,9 @@ def tokenize(line:str):
 
             num = int(line[first_pos:cursor])
             tokens.append(Token().number(num))
-            continue
 
         elif current_char == ' ':
             cursor += 1
-            continue
 
         else: # Error
             tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar]))
