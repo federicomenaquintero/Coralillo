@@ -152,7 +152,6 @@ def tokenize(line:str):
             tokens.append(Token().string(_rm_line[:second_quote_pos]))
 
             cursor += second_quote_pos + 2
-            continue
 
         elif current_char + next_char in MULTIPLE_CHARACTER_SYMBOLS:
             token = Token().simple(MULTIPLE_CHARACTER_SYMBOLS[current_char + next_char])
