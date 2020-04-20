@@ -247,7 +247,6 @@ class TokenTests(unittest.TestCase):
         expected = [Token().identifier('Hola')]
 
         self.assertEqual(tokens, expected)
-        self.assertEqual(tokens[0].name, 'Hola')
 
     def test_number_token(self):
         tokens = tokenize('1234')
@@ -270,8 +269,6 @@ class TokenTests(unittest.TestCase):
         expected = [Token().error(0, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar])]
 
         self.assertEqual(tokens, expected)
-        self.assertEqual(tokens[0].pos, 0)
-        self.assertEqual(tokens[0].msg, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar])
 
     def test_double_char_tokens(self):
         symbs = list(MULTIPLE_CHARACTER_SYMBOLS.keys())
