@@ -99,7 +99,7 @@ class Token:
         elif self.type == TokenType.Identifier:
             return self.name == other.name
         elif self.type == TokenType.String:
-            return self.string == other.string
+            return self.svalue == other.svalue
         else:
             # Return False in case we forget to add another case above
             # if we add another TokenType
@@ -130,7 +130,7 @@ class Token:
 
     def string(self, s:str):
         self.type = TokenType.String
-        self.string = s
+        self.svalue = s
         return self
 
 def tokenize(line:str):
