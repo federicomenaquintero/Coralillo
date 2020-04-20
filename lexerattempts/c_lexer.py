@@ -103,7 +103,7 @@ class Token:
         self.value = value
         return self
 
-    def indentifier(self, name:str):
+    def identifier(self, name:str):
         self.type = TokenType.Identifier
         self.name = name
         return self
@@ -155,7 +155,7 @@ def tokenize(line:str):
             while cursor < len(line) and line[cursor] in VALID_IDENTIFIER_CHARS:
                 cursor += 1
 
-            tokens.append(Token().indentifier(line[first_pos:cursor]))
+            tokens.append(Token().identifier(line[first_pos:cursor]))
 
         elif current_char in VALID_NUMBER_CHARS:
             first_pos = cursor
@@ -208,7 +208,7 @@ class TokenTests(unittest.TestCase):
 
     def test_identifier_token(self):
         tokens = tokenize('Hola ')
-        expected = [Token().indentifier('Hola')]
+        expected = [Token().identifier('Hola')]
 
         self.assertEqual(tokens, expected)
         self.assertEqual(tokens[0].name, 'Hola')
@@ -250,7 +250,7 @@ class TokenTests(unittest.TestCase):
         tokens = tokenize("1234 ho//la mi nombre es cris #")
         expected = [
             Token().number(1234),
-            Token().indentifier('ho'),
+            Token().identifier('ho'),
             Token().simple(TokenType.Comment),
         ]
 
@@ -259,7 +259,7 @@ class TokenTests(unittest.TestCase):
     def test_general(self):
         tokens = tokenize('Hola, "Esto es un string" -> 123 //')
         expected = [
-            Token().indentifier('Hola'),
+            Token().identifier('Hola'),
             Token().simple(TokenType.Sep_Comm),
             Token().string("Esto es un string"),
             Token().simple(TokenType.LArrow),
