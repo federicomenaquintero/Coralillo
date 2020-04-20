@@ -153,6 +153,8 @@ def tokenize(line:str):
                     continue
 
             tokens.append(Token().simple(TOKEN_SYMBOLS[current_char]))
+            cursor += 1
+            continue
 
         elif current_char in VALID_IDENTIFIER_CHARS:
             first_pos = cursor
@@ -178,8 +180,6 @@ def tokenize(line:str):
         else: # Error
             tokens.append(Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.UnexpectedChar]))
             break
-
-        cursor += 1
 
     return tokens
 
