@@ -113,6 +113,12 @@ class Token:
         s = str(self.type)
         if self.type == TokenType.Error:
             s += ": pos=%s msg=%s" % (self.pos, self.msg)
+        elif self.type == TokenType.Number:
+            s += ": value=%s" % self.value
+        elif self.type == TokenType.Identifier:
+            s += ": name=%s" % self.name
+        elif self.type == TokenType.String:
+            s += ": svalue=%s" % self.svalue
 
         return s
 
