@@ -72,10 +72,12 @@ MULTIPLE_CHARACTER_SYMBOLS = {
 class ErrorMsgs(Enum):
     UnexpectedChar     = auto()
     MissingQuote       = auto()
+    UnterminatedEscape = auto()
 
 ERROR_MESSAGES = {
     ErrorMsgs.UnexpectedChar: "Unexpected Character",
-    ErrorMsgs.MissingQuote: "Missing Quote"
+    ErrorMsgs.MissingQuote: "Missing Quote",
+    ErrorMsgs.UnterminatedEscape: "Unterminated escape",
 }
 
 VALID_IDENTIFIER_CHARS = tuple(ascii_letters + "_ñÑ")
@@ -144,17 +146,31 @@ class Token:
 # If the line does not have a valid string token, this function
 # returns a token with Token.type = TokenType.Error, and n_skip will
 # have a useless value.
-def consume_string(line: str):
+def consume_string(line: str, start_pos: int):
     first = line[0]
     assert(first == '"')
 
-    _rm_line = line[1:]
+    in_escape = False
 
-    second_quote_pos = _rm_line.find('"')
-    if second_quote_pos == -1: #Error
-        return Token().error(cursor, ERROR_MESSAGES[ErrorMsgs.MissingQuote]), -1
+    result = ""
 
-    return Token().string(_rm_line[:second_quote_pos]), second_quote_pos + 2
+    for idx, ch in enumerate(line[1:]):
+        if in_escape:
+            result += ch
+            in_escape = False
+        elif ch == '\\':
+            in_escape = True
+        elif ch == '"':
+            return Token().string(result), idx + 2
+        else:
+            result += ch
+
+    # If we got here, there is an error
+
+    if in_escape:
+        return Token().error(start_pos + idx + 1, ERROR_MESSAGES[ErrorMsgs.UnterminatedEscape]), -1
+    else:
+        return Token().error(start_pos, ERROR_MESSAGES[ErrorMsgs.MissingQuote]), -1
 
 def tokenize(line:str):
     tokens = []
@@ -165,7 +181,7 @@ def tokenize(line:str):
         next_char = line[cursor + 1:cursor + 2]
 
         if current_char == '"': # Strings
-            token, n_skip = consume_string(line[cursor:])
+            token, n_skip = consume_string(line[cursor:], cursor)
             tokens.append(token)
             if token.type == TokenType.String:
                 cursor += n_skip
@@ -270,12 +286,32 @@ class TokenTests(unittest.TestCase):
 
         self.assertEqual(tokens, expected)
 
+    def test_string_with_missing_quote(self):
+        tokens = tokenize('"hola')
+        expected = [
+            Token().error(0, ERROR_MESSAGES[ErrorMsgs.MissingQuote])
+        ]
+        self.assertEqual(tokens, expected)
+
+        tokens = tokenize('"hola \\"')
+        expected = [
+            Token().error(0, ERROR_MESSAGES[ErrorMsgs.MissingQuote])
+        ]
+        self.assertEqual(tokens, expected)
+
+    def test_string_with_unterminated_escape(self):
+        tokens = tokenize('"hola\\')
+        expected = [
+            Token().error(5, ERROR_MESSAGES[ErrorMsgs.UnterminatedEscape])
+        ]
+        self.assertEqual(tokens, expected)
+
     def test_string_tokens(self):
-        tokens = tokenize('123 "Hola mundo" "hola"')
+        tokens = tokenize('123 "Hola mundo" "hola \\"mundo\\" \\\\\\\\"')
         expected = [
             Token().number(123),
             Token().string("Hola mundo"),
-            Token().string("hola"),
+            Token().string('hola "mundo" \\\\'),
         ]
 
         self.assertEqual(tokens, expected)
