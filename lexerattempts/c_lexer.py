@@ -3,39 +3,39 @@ import unittest, enum
 from string import ascii_letters, digits
 
 class TokenType(enum.Enum):
-    Error =     -1
-    Comment =    0
-    Number =     1
-    Identifier = 2
+    Error       = -1
+    Comment     = 0
+    Number      = 1
+    Identifier  = 2
 
-    Opr_Plus =  3 # +
-    Opr_Min =   4 # -
-    Opr_Star =  5 # *
-    Opr_Slash = 6 # /
-    Opr_Eq =    7 # =
-    Opr_Not =   8 # !
-    Opr_Ter =   9 # ?
+    Opr_Plus    = 3 # +
+    Opr_Min     = 4 # -
+    Opr_Star    = 5 # *
+    Opr_Slash   = 6 # /
+    Opr_Eq      = 7 # =
+    Opr_Not     = 8 # !
+    Opr_Ter     = 9 # ?
 
-    Opr_MThan = 10 # >
-    Opr_LThan = 11 # <
+    Opr_MThan   = 10 # >
+    Opr_LThan   = 11 # <
 
-    Sep_Dot =   12 # .
-    Sep_Comm =  13 # ,
-    Sep_DDot =  14 # :
-    Sep_DCom =  15 # ;
-    Sep_Quote = 16 # "
+    Sep_Dot     = 12 # .
+    Sep_Comm    = 13 # ,
+    Sep_DDot    = 14 # :
+    Sep_DCom    = 15 # ;
+    Sep_Quote   = 16 # "
 
-    Agr_LPar =  17 # (
-    Agr_RPar =  18 # )
+    Agr_LPar    = 17 # (
+    Agr_RPar    = 18 # )
 
-    Opr_PlusEq =  19 # +=
-    Opr_MinEq =   20 # -=
-    Opr_StarEq =  21 # *=
+    Opr_PlusEq  = 19 # +=
+    Opr_MinEq   = 20 # -=
+    Opr_StarEq  = 21 # *=
     Opr_SlashEq = 22 # /=
-    Opr_NotEq =   23 # !=
-    Opr_EqEq =    24 # ==
+    Opr_NotEq   = 23 # !=
+    Opr_EqEq    = 24 # ==
 
-    LArrow = 25 # ->
+    LArrow      = 25 # ->
 
 SINGLE_CHARACTER_SYMBOLS = {
     '+': TokenType.Opr_Plus,
